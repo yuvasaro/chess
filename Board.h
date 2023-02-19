@@ -5,6 +5,7 @@ const int DEFAULT_SIZE = 8;
 
 class Piece;
 
+//	Test
 class Board
 {
 public:
