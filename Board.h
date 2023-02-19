@@ -1,7 +1,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-const int DEFAULT_SIZE = 8;
+#include "globals.h"
 
 class Piece;
 
@@ -11,7 +11,6 @@ class Board
 public:
 	Board() : m_rows(DEFAULT_SIZE), m_cols(DEFAULT_SIZE)
 	{
-		
 		for (int i = 0; i < DEFAULT_SIZE; i++)
 			for (int j = 0; j < DEFAULT_SIZE; j++)
 			{
