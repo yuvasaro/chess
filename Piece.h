@@ -6,24 +6,28 @@
 
 class Player;
 
+enum Team { white, black };
+
 class Piece
 {
 public:
 	Piece() {}
 	~Piece() {}
 
-	virtual bool move();		
+	virtual bool move();
+	virtual bool isValidMove();		
 
 	std::string toString() const { return m_str; }
-	char getTeam() const { return m_team; } 
+	Team getTeam() const { return m_team; }
 
-private:
-	int m_row;
+protected:
 	std::string m_str;
-	char m_team;
+	Team m_team;
 	//	int m_value; replace with hash tables
 	Player* m_p1;
 	Player* m_p2;
+	int m_row;
+	int m_col;
 };
 
 #endif

@@ -6,7 +6,12 @@
 class Pawn : public Piece
 {
 public:
-	Pawn() {}
+	Pawn(Team team, int row, int col) {
+		m_team = team;
+		m_str = team == Team::white ? "p" : "P";
+		m_row = row;
+		m_col = col;
+	}
 
 	virtual bool move()
 	{
