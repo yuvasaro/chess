@@ -5,7 +5,6 @@
 
 class Piece;
 
-//	Test
 class Board
 {
 public:
