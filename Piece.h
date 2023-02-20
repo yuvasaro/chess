@@ -6,7 +6,7 @@
 
 class Player;
 
-enum Team { white, black };
+enum class Team { white, black };
 
 class Piece
 {
