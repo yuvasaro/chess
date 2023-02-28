@@ -65,6 +65,14 @@ public class Board {
     }
 
     /**
+     * Getter for board
+     * @return the 2D array of pieces
+     */
+    public Piece[][] getBoard() {
+        return board;
+    }
+
+    /**
      * Main method for testing
      * @param args
      */
