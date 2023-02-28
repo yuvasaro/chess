@@ -1,3 +1,5 @@
+import java.awt.Point;
+
 /**
  * Abstract Piece class
  */
@@ -5,8 +7,7 @@ public abstract class Piece {
     // Instance variables
     private final String str;
     private final Team team;
-    private int row;
-    private int col;
+    private Point coords;
 
     /**
      * Piece constructor
@@ -17,8 +18,7 @@ public abstract class Piece {
     public Piece(String str, Team team, int row, int col) {
         this.str = str;
         this.team = team;
-        this.row = row;
-        this.col = col;
+        this.coords = new Point(row, col);
     }
 
     /**
@@ -38,35 +38,19 @@ public abstract class Piece {
     }
 
     /**
-     * Getter for row
-     * @return the x coordinate of the piece
+     * Getter for coords
+     * @return the position of the piece
      */
-    public int getRow() {
-        return row;
+    public Point getCoords() {
+        return coords;
     }
 
     /**
-     * Setter for row
-     * @param row the new x coordinate of the piece
+     * Setter for coords
+     * @param coords the new position of the piece
      */
-    public void setRow(int row) {
-        this.row = row;
-    }
-
-    /**
-     * Getter for col
-     * @return the y coordinate of the piece
-     */
-    public int getCol() {
-        return col;
-    }
-
-    /**
-     * Setter for col
-     * @param col the new y coordinate of the piece
-     */
-    public void setCol(int col) {
-        this.col = col;
+    public void setCoords(Point coords) {
+        this.coords = coords;
     }
 
     /**

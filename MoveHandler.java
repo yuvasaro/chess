@@ -1,8 +1,12 @@
+import java.awt.Point;
+
 /**
  * A class that handles chess move input
  */
 public class MoveHandler {
-    /* Indices of components of the move notation in a list returned by parseMove() */
+    /* Indices of components of the move notation in a list returned by parseMove() 
+    
+    Format: ["piece", "letter/number (or null)", "square", "+/# (or null)"] */
 
     // String representation of the piece being moved
     private static final int PIECE_INDEX = 0;
@@ -24,7 +28,7 @@ public class MoveHandler {
      * Uses regular expressions to extract the piece and square (and check/
      * checkmate) of the move
      */
-    public static String[] parseMove() {
+    public static String[] parseMove(String move) {
         // TODO
         return null;
     }
@@ -34,7 +38,7 @@ public class MoveHandler {
      * @param square the square string
      * @return the coordinates of the given square on the board
      */
-    public static int[] toCoords(String square) {
+    public static Point toCoords(String square) {
         // TODO
         return null;
     }
