@@ -22,10 +22,10 @@ public abstract class Piece {
     }
 
     /**
-     * Getter for str
+     * toString() getter for str
      * @return the string representation of the piece
      */
-    public String getStr() {
+    public String toString() {
         return str;
     }
 
