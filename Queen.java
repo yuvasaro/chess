@@ -12,12 +12,7 @@ public class Queen extends Piece {
      * @param col the y coordinate
      */
     public Queen(Team team, int row, int col) {
-        super(
-            // Value of str is based on team (lower/upper case)
-            (team == Team.WHITE) ? letter : letter.toUpperCase(), 
-            team, 
-            row, 
-            col);
+        super(letter, team, row, col);
     }
 
     /**

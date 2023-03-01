@@ -16,7 +16,8 @@ public abstract class Piece {
      * @param col the y coordinate of the piece
      */
     public Piece(String str, Team team, int row, int col) {
-        this.str = str;
+        // Value of str is based on team (lower/upper case)
+        this.str = (team == Team.WHITE) ? str : str.toUpperCase();
         this.team = team;
         this.coords = new Point(row, col);
     }
