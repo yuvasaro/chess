@@ -1,3 +1,5 @@
+import java.awt.Point;
+
 /**
  * Board class
  */
@@ -70,6 +72,18 @@ public class Board {
      */
     public Piece[][] getBoard() {
         return board;
+    }
+
+    /**
+     * Moves a piece by checking the validity of the move, then changing the
+     * piece's location on the board
+     * @param piece the piece to move
+     * @param newCoords the new position to move the piece to
+     * @return whether the move was successful
+     */
+    public boolean movePiece(Piece piece, Point newCoords) {
+        // TODO
+        return false;
     }
 
     /**
