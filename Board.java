@@ -81,6 +81,10 @@ public class Board {
      * @return the piece on the square (null if no piece)
      */
     public Piece getPiece(Point coords) {
+        if (coords.x < 0 || coords.x >= SIZE || 
+                coords.y < 0 || coords.y >= SIZE) {
+            return null;
+        }
         return board[coords.x][coords.y];
     }
 
