@@ -48,11 +48,17 @@ public class Pawn extends Piece {
 
         // Capture diagonally one square
         Point leftDiagonal = new Point(coords.x + 1, coords.y - 1);
+        Piece leftDiagonalPiece = board.getPiece(leftDiagonal);
         Point rightDiagonal = new Point(coords.x + 1, coords.y + 1);
-        if (board.getPiece(leftDiagonal) != null) {
+        Piece rightDiagonalPiece = board.getPiece(rightDiagonal);
+
+        // Check that there is a piece diagonally that is on the opposite team
+        if (leftDiagonalPiece instanceof Piece && 
+                leftDiagonalPiece.getTeam() != this.getTeam()) {
             possibleMoves.add(leftDiagonal);
         }
-        if (board.getPiece(rightDiagonal) != null) {
+        if (rightDiagonalPiece instanceof Piece && 
+                rightDiagonalPiece.getTeam() != this.getTeam()) {
             possibleMoves.add(rightDiagonal);
         }
 
