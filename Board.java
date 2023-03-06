@@ -103,5 +103,6 @@ public class Board {
     public static void main(String[] args) {
         Board board = new Board();
         System.out.println(board);
+        System.out.println(board.getPiece(new Point(0, 1)).getMoves(board));
     }
 }
