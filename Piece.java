@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.awt.Point;
 
 /**
@@ -56,9 +57,10 @@ public abstract class Piece {
 
     /**
      * Move method - separate implementation for each piece
-     * @return whether the move was valid and successful
+     * @param board the chessboard
+     * @return a list of possible squares to move to
      */
-    public abstract boolean move(String move);
+    public abstract ArrayList<Point> getMoves(Board board);
 }
 
 /**

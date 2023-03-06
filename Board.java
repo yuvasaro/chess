@@ -4,7 +4,8 @@ import java.awt.Point;
  * Board class
  */
 public class Board {
-    private static final int SIZE = 8;
+    public static final int SIZE = 8;
+
     private Piece[][] board;
 
     /**
@@ -72,6 +73,15 @@ public class Board {
      */
     public Piece[][] getBoard() {
         return board;
+    }
+
+    /**
+     * Gets the piece on a given square's coordinates
+     * @param coords the coordinates of the square
+     * @return the piece on the square (null if no piece)
+     */
+    public Piece getPiece(Point coords) {
+        return board[coords.x][coords.y];
     }
 
     /**

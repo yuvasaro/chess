@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.awt.Point;
+
 /**
  * Queen class
  */
@@ -17,10 +20,13 @@ public class Queen extends Piece {
 
     /**
      * Queen move:
+     * @param board the chessboard
+     * @return a list of possible squares to move to
      */
-    public boolean move(String move) {
+    public ArrayList<Point> getMoves(Board board) {
         // TODO
-        return false;
+
+        return null;
     }
 }
 
