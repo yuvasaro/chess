@@ -40,7 +40,7 @@ public class Pawn extends Piece {
 
         // Two squares ahead
         if (!hasMoved) {
-            Point twoSquaresAhead = new Point(coords.x, coords.y + 1);
+            Point twoSquaresAhead = new Point(coords.x, coords.y + 2);
             if (board.getPiece(twoSquaresAhead) == null) {
                 possibleMoves.add(twoSquaresAhead);
             }
