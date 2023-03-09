@@ -33,21 +33,21 @@ public class Pawn extends Piece {
         Point coords = getCoords();
 
         // One square ahead
-        Point oneSquareAhead = new Point(coords.x + 1, coords.y);
+        Point oneSquareAhead = new Point(coords.x, coords.y + 1);
         if (board.getPiece(oneSquareAhead) == null) {
             possibleMoves.add(oneSquareAhead);
         }
 
         // Two squares ahead
         if (!hasMoved) {
-            Point twoSquaresAhead = new Point(coords.x + 2, coords.y);
+            Point twoSquaresAhead = new Point(coords.x, coords.y + 2);
             if (board.getPiece(twoSquaresAhead) == null) {
                 possibleMoves.add(twoSquaresAhead);
             }
         }
 
         // Capture diagonally one square
-        Point leftDiagonal = new Point(coords.x + 1, coords.y - 1);
+        Point leftDiagonal = new Point(coords.x - 1, coords.y + 1);
         Piece leftDiagonalPiece = board.getPiece(leftDiagonal);
         Point rightDiagonal = new Point(coords.x + 1, coords.y + 1);
         Piece rightDiagonalPiece = board.getPiece(rightDiagonal);

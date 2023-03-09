@@ -18,30 +18,30 @@ public class Board {
 
         // Set up White pieces
         board[0][0] = new Rook(Team.WHITE, 0, 0);
-        board[0][1] = new Knight(Team.WHITE, 0, 1);
-        board[0][2] = new Bishop(Team.WHITE, 0, 2);
-        board[0][3] = new Queen(Team.WHITE, 0, 3);
-        board[0][4] = new King(Team.WHITE, 0, 4);
-        board[0][5] = new Bishop(Team.WHITE, 0, 5);
-        board[0][6] = new Knight(Team.WHITE, 0, 6);
-        board[0][7] = new Rook(Team.WHITE, 0, 7);
+        board[1][0] = new Knight(Team.WHITE, 0, 1);
+        board[2][0] = new Bishop(Team.WHITE, 0, 2);
+        board[3][0] = new Queen(Team.WHITE, 0, 3);
+        board[4][0] = new King(Team.WHITE, 0, 4);
+        board[5][0] = new Bishop(Team.WHITE, 0, 5);
+        board[6][0] = new Knight(Team.WHITE, 0, 6);
+        board[7][0] = new Rook(Team.WHITE, 0, 7);
 
         for (int i = 0; i < SIZE; i++) {
-            board[1][i] = new Pawn(Team.WHITE, 1, i);
+            board[i][1] = new Pawn(Team.WHITE, i, 1);
         }
 
         // Set up Black pieces
-        board[7][0] = new Rook(Team.BLACK, 7, 0);
-        board[7][1] = new Knight(Team.BLACK, 7, 1);
-        board[7][2] = new Bishop(Team.BLACK, 7, 2);
-        board[7][3] = new Queen(Team.BLACK, 7, 3);
-        board[7][4] = new King(Team.BLACK, 7, 4);
-        board[7][5] = new Bishop(Team.BLACK, 7, 5);
-        board[7][6] = new Knight(Team.BLACK, 7, 6);
+        board[0][7] = new Rook(Team.BLACK, 7, 0);
+        board[1][7] = new Knight(Team.BLACK, 7, 1);
+        board[2][7] = new Bishop(Team.BLACK, 7, 2);
+        board[3][7] = new Queen(Team.BLACK, 7, 3);
+        board[4][7] = new King(Team.BLACK, 7, 4);
+        board[5][7] = new Bishop(Team.BLACK, 7, 5);
+        board[6][7] = new Knight(Team.BLACK, 7, 6);
         board[7][7] = new Rook(Team.BLACK, 7, 7);
 
         for (int i = 0; i < SIZE; i++) {
-            board[6][i] = new Pawn(Team.BLACK, 7, i);
+            board[i][6] = new Pawn(Team.BLACK, i, 6);
         }
     }
 
@@ -52,8 +52,8 @@ public class Board {
     public String toString() {
         String display = "";
 
-        for (int i = SIZE - 1; i >= 0; i--) {
-            for (int j = 0; j < SIZE; j++) {
+        for (int j = SIZE - 1; j >= 0; j--) {
+            for (int i = 0; i < SIZE; i++) {
                 Piece piece = board[i][j];
                 if (piece == null) {
                     display += ". ";
@@ -108,7 +108,7 @@ public class Board {
         Board board = new Board();
         System.out.println(board);
 
-        Piece pawn = board.getPiece(new Point(1, 0));
+        Piece pawn = board.getPiece(new Point(0, 1));
         System.out.println(pawn);
         System.out.println(pawn.getMoves(board));
     }
