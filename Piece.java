@@ -5,10 +5,14 @@ import java.awt.Point;
  * Abstract Piece class
  */
 public abstract class Piece {
+    // Unique ID for all pieces
+    private static int currentID = 1;
+    
     // Instance variables
     private final String str;
     private final Team team;
     private Point coords;
+    private int id;
 
     /**
      * Piece constructor
@@ -21,6 +25,8 @@ public abstract class Piece {
         this.str = (team == Team.WHITE) ? str : str.toUpperCase();
         this.team = team;
         this.coords = new Point(row, col);
+        this.id = currentID;
+        currentID++;
     }
 
     /**
@@ -53,6 +59,14 @@ public abstract class Piece {
      */
     public void setCoords(Point coords) {
         this.coords = coords;
+    }
+
+    /**
+     * Getter for id
+     * @return the ID of the piece
+     */
+    public int getID() {
+        return id;
     }
 
     /**

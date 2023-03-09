@@ -1,4 +1,5 @@
 import java.awt.Point;
+import java.util.Map;
 
 /**
  * Board class
@@ -7,6 +8,14 @@ public class Board {
     public static final int SIZE = 8;
 
     private Piece[][] board;
+    private Map<String, Integer> pieceValues = Map.of(
+        "p", 1,
+        "n", 3,
+        "b", 3,
+        "r", 5,
+        "q", 9,
+        "k", 0
+    );
 
     /**
      * Board constructor
@@ -86,6 +95,15 @@ public class Board {
             return null;
         }
         return board[coords.x][coords.y];
+    }
+
+    /**
+     * Gets the value (in points) of a piece
+     * @param piece the piece
+     * @return the value of the piece
+     */
+    public int getPieceValue(Piece piece) {
+        return pieceValues.get(piece.toString().toLowerCase());
     }
 
     /**
