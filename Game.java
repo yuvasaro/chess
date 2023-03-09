@@ -10,6 +10,7 @@ public class Game {
      */
     public Game() {
         teamToplay = Team.WHITE;
+        board = new Board();
     }
 
     /**
