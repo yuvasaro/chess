@@ -27,13 +27,13 @@ public class Board {
 
         // Set up White pieces
         board[0][0] = new Rook(Team.WHITE, 0, 0);
-        board[1][0] = new Knight(Team.WHITE, 0, 1);
-        board[2][0] = new Bishop(Team.WHITE, 0, 2);
-        board[3][0] = new Queen(Team.WHITE, 0, 3);
-        board[4][0] = new King(Team.WHITE, 0, 4);
-        board[5][0] = new Bishop(Team.WHITE, 0, 5);
-        board[6][0] = new Knight(Team.WHITE, 0, 6);
-        board[7][0] = new Rook(Team.WHITE, 0, 7);
+        board[1][0] = new Knight(Team.WHITE, 1, 0);
+        board[2][0] = new Bishop(Team.WHITE, 2, 0);
+        board[3][0] = new Queen(Team.WHITE, 3, 0);
+        board[4][0] = new King(Team.WHITE, 4, 0);
+        board[5][0] = new Bishop(Team.WHITE, 5, 0);
+        board[6][0] = new Knight(Team.WHITE, 6, 0);
+        board[7][0] = new Rook(Team.WHITE, 7, 0);
 
         for (int i = 0; i < SIZE; i++) {
             board[i][1] = new Pawn(Team.WHITE, i, 1);
@@ -85,13 +85,22 @@ public class Board {
     }
 
     /**
+     * Returns whether the given coordinates are in bounds
+     * @param coords the coordinates to check
+     * @return whether the coordinates are in bounds
+     */
+    public boolean isInBounds(Point coords) {
+        return coords.x >= 0 && coords.x < SIZE && 
+            coords.y >= 0 && coords.y < SIZE;
+    }
+
+    /**
      * Gets the piece on a given square's coordinates
      * @param coords the coordinates of the square
      * @return the piece on the square (null if no piece)
      */
     public Piece getPiece(Point coords) {
-        if (coords.x < 0 || coords.x >= SIZE || 
-                coords.y < 0 || coords.y >= SIZE) {
+        if (!isInBounds(coords)) {
             return null;
         }
         return board[coords.x][coords.y];
@@ -107,8 +116,7 @@ public class Board {
     }
 
     /**
-     * Moves a piece by checking the validity of the move, then changing the
-     * piece's location on the board
+     * Moves a piece by changing the piece's location on the board
      * @param piece the piece to move
      * @param newCoords the new position to move the piece to
      * @return whether the move was successful
@@ -126,8 +134,9 @@ public class Board {
         Board board = new Board();
         System.out.println(board);
 
-        Piece pawn = board.getPiece(new Point(0, 1));
-        System.out.println(pawn);
-        System.out.println(pawn.getMoves(board));
+        Piece knight = board.getPiece(new Point(1, 0));
+        System.out.println(knight);
+        System.out.println(knight.getCoords());
+        System.out.println(knight.getMoves(board));
     }
 }

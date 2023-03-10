@@ -2,14 +2,14 @@
  * The chess game engine
  */
 public class Game {
-    private Team teamToplay;
+    private boolean whiteToPlay;
     private Board board;
 
     /**
      * Creates a new game with white as the first player
      */
     public Game() {
-        teamToplay = Team.WHITE;
+        whiteToPlay = true;
         board = new Board();
     }
 
