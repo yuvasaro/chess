@@ -11,22 +11,23 @@ public class Knight extends Piece {
 
     /**
      * Knight constructor
+     * @param board the chessboard
      * @param team white or black
      * @param row the x coordinate
      * @param col the y coordinate
      */
-    public Knight(Team team, int row, int col) {
-        super(letter, team, row, col);
+    public Knight(Board board, Team team, int row, int col) {
+        super(board, letter, team, row, col);
     }
 
     /**
      * Knight move:
-     * @param board the chessboard
      * @return a list of possible squares to move to
      */
-    public ArrayList<Point> getMoves(Board board) {
+    public ArrayList<Point> getMoves() {
         ArrayList<Point> possibleMoves = new ArrayList<>();
         Point coords = getCoords();
+        Board board = getBoard();
 
         // All 8 possible squares
         possibleMoves.add(new Point(coords.x - 2, coords.y + 1));

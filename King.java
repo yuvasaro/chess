@@ -10,20 +10,20 @@ public class King extends Piece {
 
     /**
      * King constructor
+     * @param board the chessboard
      * @param team white or black
      * @param row the x coordinate
      * @param col the y coordinate
      */
-    public King(Team team, int row, int col) {
-        super(letter, team, row, col);
+    public King(Board board, Team team, int row, int col) {
+        super(board, letter, team, row, col);
     }
 
     /**
      * King move:
-     * @param board the chessboard
      * @return a list of possible squares to move to
      */
-    public ArrayList<Point> getMoves(Board board) {
+    public ArrayList<Point> getMoves() {
         // TODO
 
         return null;

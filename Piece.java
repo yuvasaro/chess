@@ -9,6 +9,7 @@ public abstract class Piece {
     private static int currentID = 1;
     
     // Instance variables
+    private final Board board;
     private final String str;
     private final Team team;
     private Point coords;
@@ -20,8 +21,9 @@ public abstract class Piece {
      * @param row the x coordinate of the piece
      * @param col the y coordinate of the piece
      */
-    public Piece(String str, Team team, int row, int col) {
+    public Piece(Board board, String str, Team team, int row, int col) {
         // Value of str is based on team (lower/upper case)
+        this.board = board;
         this.str = (team == Team.WHITE) ? str : str.toUpperCase();
         this.team = team;
         this.coords = new Point(row, col);
@@ -35,6 +37,14 @@ public abstract class Piece {
      */
     public String toString() {
         return str;
+    }
+
+    /**
+     * Getter for board
+     * @return the chessboard
+     */
+    public Board getBoard() {
+        return board;
     }
 
     /**
@@ -74,7 +84,7 @@ public abstract class Piece {
      * @param board the chessboard
      * @return a list of possible squares to move to
      */
-    public abstract ArrayList<Point> getMoves(Board board);
+    public abstract ArrayList<Point> getMoves();
 }
 
 /**

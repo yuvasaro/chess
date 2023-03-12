@@ -16,12 +16,13 @@ public class Pawn extends Piece {
 
     /**
      * Pawn constructor
+     * @param board the chessboard
      * @param team white or black
      * @param row the x coordinate
      * @param col the y coordinate
      */
-    public Pawn(Team team, int row, int col) {
-        super(letter, team, row, col);
+    public Pawn(Board board, Team team, int row, int col) {
+        super(board, letter, team, row, col);
         hasMoved = false;
         moveDir = (team == Team.WHITE) ? 1 : -1;
     }
@@ -29,12 +30,12 @@ public class Pawn extends Piece {
     /**
      * Pawn move: 1 square forward (2 squares if first turn), capture
      * diagonally 1 square, promotion at the opposite side
-     * @param board the chessboard
      * @return a list of possible squares to move to
      */
-    public ArrayList<Point> getMoves(Board board) {
+    public ArrayList<Point> getMoves() {
         ArrayList<Point> possibleMoves = new ArrayList<>();
         Point coords = getCoords();
+        Board board = getBoard();
 
         // One square ahead
         Point oneSquareAhead = new Point(coords.x, coords.y + moveDir);

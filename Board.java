@@ -26,31 +26,31 @@ public class Board {
         // Piece order: Rook Knight Bishop Queen King Bishop Knight Rook
 
         // Set up White pieces
-        board[0][0] = new Rook(Team.WHITE, 0, 0);
-        board[1][0] = new Knight(Team.WHITE, 1, 0);
-        board[2][0] = new Bishop(Team.WHITE, 2, 0);
-        board[3][0] = new Queen(Team.WHITE, 3, 0);
-        board[4][0] = new King(Team.WHITE, 4, 0);
-        board[5][0] = new Bishop(Team.WHITE, 5, 0);
-        board[6][0] = new Knight(Team.WHITE, 6, 0);
-        board[7][0] = new Rook(Team.WHITE, 7, 0);
+        board[0][0] = new Rook(this, Team.WHITE, 0, 0);
+        board[1][0] = new Knight(this, Team.WHITE, 1, 0);
+        board[2][0] = new Bishop(this, Team.WHITE, 2, 0);
+        board[3][0] = new Queen(this, Team.WHITE, 3, 0);
+        board[4][0] = new King(this, Team.WHITE, 4, 0);
+        board[5][0] = new Bishop(this, Team.WHITE, 5, 0);
+        board[6][0] = new Knight(this, Team.WHITE, 6, 0);
+        board[7][0] = new Rook(this, Team.WHITE, 7, 0);
 
         for (int i = 0; i < SIZE; i++) {
-            board[i][1] = new Pawn(Team.WHITE, i, 1);
+            board[i][1] = new Pawn(this, Team.WHITE, i, 1);
         }
 
         // Set up Black pieces
-        board[0][7] = new Rook(Team.BLACK, 7, 0);
-        board[1][7] = new Knight(Team.BLACK, 7, 1);
-        board[2][7] = new Bishop(Team.BLACK, 7, 2);
-        board[3][7] = new Queen(Team.BLACK, 7, 3);
-        board[4][7] = new King(Team.BLACK, 7, 4);
-        board[5][7] = new Bishop(Team.BLACK, 7, 5);
-        board[6][7] = new Knight(Team.BLACK, 7, 6);
-        board[7][7] = new Rook(Team.BLACK, 7, 7);
+        board[0][7] = new Rook(this, Team.BLACK, 0, 7);
+        board[1][7] = new Knight(this, Team.BLACK, 1, 7);
+        board[2][7] = new Bishop(this, Team.BLACK, 2, 7);
+        board[3][7] = new Queen(this, Team.BLACK, 3, 7);
+        board[4][7] = new King(this, Team.BLACK, 4, 7);
+        board[5][7] = new Bishop(this, Team.BLACK, 5, 7);
+        board[6][7] = new Knight(this, Team.BLACK, 6, 7);
+        board[7][7] = new Rook(this, Team.BLACK, 7, 7);
 
         for (int i = 0; i < SIZE; i++) {
-            board[i][6] = new Pawn(Team.BLACK, i, 6);
+            board[i][6] = new Pawn(this, Team.BLACK, i, 6);
         }
     }
 
@@ -137,6 +137,6 @@ public class Board {
         Piece knight = board.getPiece(new Point(1, 0));
         System.out.println(knight);
         System.out.println(knight.getCoords());
-        System.out.println(knight.getMoves(board));
+        System.out.println(knight.getMoves());
     }
 }
