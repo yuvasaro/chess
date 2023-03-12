@@ -71,9 +71,13 @@ public class Pawn extends Piece {
     }
 
     /**
-     * Sets hasMoved to true when the pawn has moved
+     * Moves the pawn to its new square and sets hasMoved to true
+     * @param newCoords the new coordinates to move to
      */
-    public void setMoved() {
-        hasMoved = true;
+    public void move(Point newCoords) {
+        super.move(newCoords);
+        if (!hasMoved) {
+            hasMoved = true;
+        }
     }
 }

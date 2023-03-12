@@ -80,6 +80,14 @@ public abstract class Piece {
     }
 
     /**
+     * Moves the piece to a new square on the board
+     * @param newCoords the new coordinates to move to
+     */
+    public void move(Point newCoords) {
+        setCoords(newCoords);
+    }
+
+    /**
      * Move method - separate implementation for each piece
      * @return a list of possible squares to move to
      */
