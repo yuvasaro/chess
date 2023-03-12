@@ -64,14 +64,6 @@ public abstract class Piece {
     }
 
     /**
-     * Setter for coords
-     * @param coords the new position of the piece
-     */
-    public void setCoords(Point coords) {
-        this.coords = coords;
-    }
-
-    /**
      * Getter for id
      * @return the ID of the piece
      */
@@ -84,7 +76,7 @@ public abstract class Piece {
      * @param newCoords the new coordinates to move to
      */
     public void move(Point newCoords) {
-        setCoords(newCoords);
+        coords = newCoords;
     }
 
     /**
