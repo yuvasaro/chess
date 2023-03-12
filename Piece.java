@@ -81,7 +81,6 @@ public abstract class Piece {
 
     /**
      * Move method - separate implementation for each piece
-     * @param board the chessboard
      * @return a list of possible squares to move to
      */
     public abstract ArrayList<Point> getMoves();
