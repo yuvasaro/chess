@@ -69,4 +69,11 @@ public class Pawn extends Piece {
 
         return possibleMoves;
     }
+
+    /**
+     * Sets hasMoved to true when the pawn has moved
+     */
+    public void setMoved() {
+        hasMoved = true;
+    }
 }
