@@ -134,9 +134,9 @@ public class Board {
         Board board = new Board();
         System.out.println(board);
 
-        Piece knight = board.getPiece(new Point(1, 0));
-        System.out.println(knight);
-        System.out.println(knight.getCoords());
-        System.out.println(knight.getMoves());
+        Piece bishop = board.getPiece(new Point(2, 0));
+        System.out.println(bishop);
+        System.out.println(bishop.getCoords());
+        System.out.println(bishop.getMoves());
     }
 }

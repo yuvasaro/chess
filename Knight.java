@@ -21,7 +21,7 @@ public class Knight extends Piece {
     }
 
     /**
-     * Knight move:
+     * Knight move: L-shape; 2 squares one way, 1 square perpendicular
      * @return a list of possible squares to move to
      */
     public ArrayList<Point> getMoves() {
