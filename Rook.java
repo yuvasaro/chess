@@ -8,6 +8,9 @@ public class Rook extends Piece {
     // String representation
     private static final String letter = "r";
 
+    // Whether the rook has moved at least once
+    private boolean hasMoved;
+
     /**
      * Rook constructor
      * @param board the chessboard
@@ -17,6 +20,7 @@ public class Rook extends Piece {
      */
     public Rook(Board board, Team team, int row, int col) {
         super(board, letter, team, row, col);
+        hasMoved = false;
     }
 
     /**
@@ -71,5 +75,16 @@ public class Rook extends Piece {
         }
 
         return possibleMoves;
+    }
+
+    /**
+     * Moves the rook to its new square and sets hasMoved to true
+     * @param newCoords the new coordinates to move to
+     */
+    public void move(Point newCoords) {
+        super.move(newCoords);
+        if (!hasMoved) {
+            hasMoved = true;
+        }
     }
 }
