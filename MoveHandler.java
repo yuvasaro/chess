@@ -37,7 +37,7 @@ public class MoveHandler {
 
     // Regex pattern
     public static final String PATTERN = 
-        "(^[NBRQK])?([a-h])?(x)?([a-h][1-8])(?:([=][NBQR]))?([+#])?";
+        "([NBRQK])?([a-h])?(x)?([a-h][1-8])(?:([=][NBQR]))?([+#])?";
 
     // Castle regex pattern
     public static final String CASTLE_PATTERN = "(O-O)(-O)?([+#])?";
@@ -133,12 +133,12 @@ public class MoveHandler {
      * @param args
      */
     public static void main(String[] args) {
-        String[] move = parseMove("Ndxc7+");
+        String[] move = parseMove("my move is Ndxc7+");
         for (String component : move) {
             System.out.println(component);
         }
         System.out.println();
-        move = parseMove("O-O-O#");
+        move = parseMove("castle checkmate O-O-O#");
         for (String component : move) {
             System.out.println(component);
         }
