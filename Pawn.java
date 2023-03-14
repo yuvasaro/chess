@@ -8,6 +8,9 @@ public class Pawn extends Piece {
     // String representation
     private static final String letter = "p";
 
+    // Path to piece image
+    private static final String image = "assets/pawn_%s.png";
+
     // Whether the pawn has moved at least once
     private boolean hasMoved;
 
@@ -22,7 +25,7 @@ public class Pawn extends Piece {
      * @param col the y coordinate
      */
     public Pawn(Board board, Team team, int row, int col) {
-        super(board, letter, team, row, col);
+        super(board, letter, image, team, row, col);
         hasMoved = false;
         moveDir = (team == Team.WHITE) ? 1 : -1;
     }

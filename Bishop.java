@@ -8,6 +8,9 @@ public class Bishop extends Piece {
     // String representation
     private static final String letter = "b";
 
+    // Path to piece image
+    private static final String image = "assets/bishop_%s.png";
+
     /**
      * Bishop constructor
      * @param board the chessboard
@@ -16,7 +19,7 @@ public class Bishop extends Piece {
      * @param col the y coordinate
      */
     public Bishop(Board board, Team team, int row, int col) {
-        super(board, letter, team, row, col);
+        super(board, letter, image, team, row, col);
     }
 
     /**

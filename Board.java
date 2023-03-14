@@ -1,13 +1,22 @@
 import java.awt.Point;
 import java.util.Map;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.Buffer;
 
 /**
  * Board class
  */
 public class Board {
-    public static final int SIZE = 8;
-
+    private static final int SIZE = 8;
+    private static final String IMAGE = "assets/board.png";
+    private static final String SAVE_IMAGE = "current_board.png";
+    
     private Piece[][] board;
+
+    // Piece values
     private Map<String, Integer> pieceValues = Map.of(
         "p", 1,
         "n", 3,
@@ -127,16 +136,106 @@ public class Board {
     }
 
     /**
+     * Opens an image and returns its pixel array
+     * @param imagePath the path to the image
+     * @return the pixel array
+     * @throws IOException if the image file is not found
+     */
+    private int[][] open(BufferedImage bufferedImage) throws IOException {
+        // Get height and width
+        int height = bufferedImage.getHeight();
+        int width = bufferedImage.getWidth();
+
+        // Image is stored in column-major order; traverse that way
+        int[][] pixelArray = new int[width][height];
+        for(int i = 0; i < width; i++){
+            for(int j = 0; j < height; j++){
+                // Get each pixel's RGB
+                pixelArray[i][j] = bufferedImage.getRGB(i, j);
+            }
+        }
+
+        return pixelArray;
+    }
+
+    /**
+     * Saves the current board position as a PNG image
+     * @throws IOException if an image file is not found
+     */
+    public void saveAsImage() throws IOException {
+        // RGB byte shifts
+        int redByteShift = 16;
+        int greenByteShift = 8;
+        int blueByteShift = 0;
+
+        // Open board image and get pixel array
+        BufferedImage boardImage = ImageIO.read(new File(IMAGE));
+        int[][] boardPixelArray = open(boardImage);
+
+        // Transparent RGB color as pixel int
+        int transparentRGB = (255 << redByteShift) + (255 << greenByteShift) + 
+            (255 << blueByteShift);
+
+        // Loop through all pieces on the board and add draw them
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                Piece piece = getPiece(new Point(i, j));
+                if (piece == null) { // No piece on square
+                    continue;
+                }
+
+                // Open piece image and get pixel array
+                String imagePath = piece.getImagePath();
+                BufferedImage pieceImage = ImageIO.read(new File(imagePath));
+                int[][] piecePixelArray = open(pieceImage);
+                int pieceSize = piecePixelArray.length;
+                
+                // Calculate start and end coords of piece image on board image
+                int startRow = i * pieceSize;
+                int startCol = (SIZE - 1 - j) * pieceSize;
+                int endRow = startRow + pieceSize;
+                int endCol = startCol + pieceSize;
+
+                // Draw the piece on the board using the pixel arrays
+                for (int ii = startRow; ii < endRow; ii++) {
+                    for (int jj = startCol; jj < endCol; jj++) {
+                        int patchRow = ii - startRow;
+                        int patchCol = jj - startCol;
+
+                        // Draw the part of the image that's not transparent
+                        if (piecePixelArray[patchRow][patchCol] != 
+                                transparentRGB) {
+                            boardPixelArray[ii][jj] = 
+                            piecePixelArray[patchRow][patchCol];
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Set the RGB values of the board image using the pixel array
+        for (int i = 0; i < boardImage.getWidth(); i++) {
+            for (int j = 0; j < boardImage.getHeight(); j++) {
+                // Turn pixel value into packed RGB int
+                int pixel = boardPixelArray[i][j] << redByteShift | 
+                    boardPixelArray[i][j] << greenByteShift | 
+                    boardPixelArray[i][j] << blueByteShift;
+                boardImage.setRGB(i, j, pixel);
+            }
+        }
+
+        // Save to output file
+        File outputFile = new File(SAVE_IMAGE);
+        ImageIO.write(boardImage, "png", outputFile);
+    }
+
+    /**
      * Main method for testing
      * @param args
+     * @throws IOException
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Board board = new Board();
-        System.out.println(board);
-
-        Piece bishop = board.getPiece(new Point(2, 0));
-        System.out.println(bishop);
-        System.out.println(bishop.getCoords());
-        System.out.println(bishop.getMoves());
+        board.saveAsImage();
     }
 }

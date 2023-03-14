@@ -9,6 +9,9 @@ public class Knight extends Piece {
     // String representation
     private static final String letter = "n";
 
+    // Path to piece image
+    private static final String image = "assets/knight_%s.png";
+
     /**
      * Knight constructor
      * @param board the chessboard
@@ -17,7 +20,7 @@ public class Knight extends Piece {
      * @param col the y coordinate
      */
     public Knight(Board board, Team team, int row, int col) {
-        super(board, letter, team, row, col);
+        super(board, letter, image, team, row, col);
     }
 
     /**

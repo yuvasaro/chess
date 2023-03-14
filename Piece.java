@@ -13,6 +13,7 @@ public abstract class Piece {
     private final String str;
     private final Team team;
     private Point coords;
+    private String image;
     private int id;
 
     /**
@@ -21,12 +22,15 @@ public abstract class Piece {
      * @param row the x coordinate of the piece
      * @param col the y coordinate of the piece
      */
-    public Piece(Board board, String str, Team team, int row, int col) {
+    public Piece(Board board, String str, String image, Team team, 
+            int row, int col) {
         // Value of str is based on team (lower/upper case)
         this.board = board;
         this.str = (team == Team.WHITE) ? str : str.toUpperCase();
         this.team = team;
         this.coords = new Point(row, col);
+        this.image = (team == Team.WHITE) ? 
+            String.format(image, "white") : String.format(image, "black");
         this.id = currentID;
         currentID++;
     }
@@ -61,6 +65,14 @@ public abstract class Piece {
      */
     public Point getCoords() {
         return coords;
+    }
+
+    /**
+     * Returns the path to the PNG image of the piece
+     * @return the path to the PNG image of the piece
+     */
+    public String getImagePath() {
+        return image;
     }
 
     /**

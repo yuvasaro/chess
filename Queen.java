@@ -8,6 +8,9 @@ public class Queen extends Piece {
     // String representation
     private static final String letter = "q";
 
+    // Path to piece image
+    private static final String image = "assets/queen_%s.png";
+
     /**
      * Queen constructor
      * @param board the chessboard
@@ -16,7 +19,7 @@ public class Queen extends Piece {
      * @param col the y coordinate
      */
     public Queen(Board board, Team team, int row, int col) {
-        super(board, letter, team, row, col);
+        super(board, letter, image, team, row, col);
     }
 
     /**

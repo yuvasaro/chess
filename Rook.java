@@ -8,6 +8,9 @@ public class Rook extends Piece {
     // String representation
     private static final String letter = "r";
 
+    // Path to piece image
+    private static final String image = "assets/rook_%s.png";
+
     // Whether the rook has moved at least once
     private boolean hasMoved;
 
@@ -19,7 +22,7 @@ public class Rook extends Piece {
      * @param col the y coordinate
      */
     public Rook(Board board, Team team, int row, int col) {
-        super(board, letter, team, row, col);
+        super(board, letter, image, team, row, col);
         hasMoved = false;
     }
 

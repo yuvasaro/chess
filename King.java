@@ -8,6 +8,9 @@ public class King extends Piece {
     // String representation
     private static final String letter = "k";
 
+    // Path to piece image
+    private static final String image = "assets/king_%s.png";
+
     // Whether the king has moved at least once
     private boolean hasMoved;
 
@@ -19,7 +22,7 @@ public class King extends Piece {
      * @param col the y coordinate
      */
     public King(Board board, Team team, int row, int col) {
-        super(board, letter, team, row, col);
+        super(board, letter, image, team, row, col);
         hasMoved = false;
     }
 
