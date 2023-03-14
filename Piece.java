@@ -26,7 +26,7 @@ public abstract class Piece {
             int row, int col) {
         // Value of str is based on team (lower/upper case)
         this.board = board;
-        this.str = (team == Team.WHITE) ? str : str.toUpperCase();
+        this.str = (team == Team.WHITE) ? str.toLowerCase() : str.toUpperCase();
         this.team = team;
         this.coords = new Point(row, col);
         this.image = (team == Team.WHITE) ? 

@@ -39,14 +39,14 @@ public class MoveHandler {
     public static final int CHECK_MATE = 6;
 
     // Regex pattern
-    public static final String PATTERN = 
+    private static final String PATTERN = 
         "([NBRQK])?([a-h])?(x)?([a-h][1-8])(?:([=][NBQR]))?([+#])?";
 
     // Castle regex pattern
-    public static final String CASTLE_PATTERN = "(O-O)(-O)?([+#])?";
+    private static final String CASTLE_PATTERN = "(O-O)(-O)?([+#])?";
 
     // Map of letters to coordinates
-    public static final Map<String, Integer> letterCoordMapping = Map.of(
+    private static final Map<String, Integer> letterCoordMapping = Map.of(
         "a", 0,
         "b", 1,
         "c", 2,
@@ -91,6 +91,52 @@ public class MoveHandler {
         }
 
         return moveComponents;
+    }
+
+    /**
+     * Checks whether the move components theoretically represent a valid move
+     * @param moveComponents the array of move components
+     * @return whether the move is theoretically valid
+     */
+    public static boolean validMoveComponents(String[] moveComponents) {
+        // Unpack move components
+        String piece = moveComponents[PIECE];
+        String specifier = moveComponents[SPECIFIER];
+        String capture = moveComponents[CAPTURE];
+        String square = moveComponents[SQUARE];
+        String promotion = moveComponents[PROMOTION];
+        String castle = moveComponents[CASTLE];
+        // String checkMate = move[CHECK_MATE];
+
+        // Move must either have a square or be a castle
+        if (square == null && castle == null) {
+            return false;
+        }
+
+        // Castle: only castle and checkMate can be not null
+        if (castle != null) {
+            if (piece != null || specifier != null || capture != null || 
+                    square != null || promotion != null) {
+                return false;
+            }
+        }
+
+        // Note: Now implied that square is not null
+
+        // Capture: There must be a piece signified before the "x"
+        else if (capture != null && specifier == null && piece == null) {
+            return false;
+        }
+
+        // Promotion: square and promotion must be not null, 
+        // specifier, capture, and checkMate can be not null
+        else if (promotion != null) {
+            if (piece != null) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -141,7 +187,7 @@ public class MoveHandler {
             System.out.println(component);
         }
         System.out.println();
-        move = parseMove("castle checkmate O-O-O#");
+        move = parseMove("xb8=Q#");
         for (String component : move) {
             System.out.println(component);
         }

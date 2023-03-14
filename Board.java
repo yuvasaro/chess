@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Board class
@@ -14,6 +15,8 @@ public class Board {
     private static final String SAVE_IMAGE = "current_board.png";
     
     private Piece[][] board;
+    private ArrayList<Piece> whitePieces;
+    private ArrayList<Piece> blackPieces;
 
     // Piece values
     private Map<String, Integer> pieceValues = Map.of(
@@ -30,35 +33,53 @@ public class Board {
      */
     public Board() {
         board = new Piece[SIZE][SIZE];
+        whitePieces = new ArrayList<>();
+        blackPieces = new ArrayList<>();
 
         // Piece order: Rook Knight Bishop Queen King Bishop Knight Rook
 
         // Set up White pieces
-        board[0][0] = new Rook(this, Team.WHITE, 0, 0);
-        board[1][0] = new Knight(this, Team.WHITE, 1, 0);
-        board[2][0] = new Bishop(this, Team.WHITE, 2, 0);
-        board[3][0] = new Queen(this, Team.WHITE, 3, 0);
-        board[4][0] = new King(this, Team.WHITE, 4, 0);
-        board[5][0] = new Bishop(this, Team.WHITE, 5, 0);
-        board[6][0] = new Knight(this, Team.WHITE, 6, 0);
-        board[7][0] = new Rook(this, Team.WHITE, 7, 0);
+        setUpPiece(new Rook(this, Team.WHITE, 0, 0));
+        setUpPiece(new Knight(this, Team.WHITE, 1, 0));
+        setUpPiece(new Bishop(this, Team.WHITE, 2, 0));
+        setUpPiece(new Queen(this, Team.WHITE, 3, 0));
+        setUpPiece(new King(this, Team.WHITE, 4, 0));
+        setUpPiece(new Bishop(this, Team.WHITE, 5, 0));
+        setUpPiece(new Knight(this, Team.WHITE, 6, 0));
+        setUpPiece(new Rook(this, Team.WHITE, 7, 0));
 
         for (int i = 0; i < SIZE; i++) {
-            board[i][1] = new Pawn(this, Team.WHITE, i, 1);
+            setUpPiece(new Pawn(this, Team.WHITE, i, 1));
         }
 
         // Set up Black pieces
-        board[0][7] = new Rook(this, Team.BLACK, 0, 7);
-        board[1][7] = new Knight(this, Team.BLACK, 1, 7);
-        board[2][7] = new Bishop(this, Team.BLACK, 2, 7);
-        board[3][7] = new Queen(this, Team.BLACK, 3, 7);
-        board[4][7] = new King(this, Team.BLACK, 4, 7);
-        board[5][7] = new Bishop(this, Team.BLACK, 5, 7);
-        board[6][7] = new Knight(this, Team.BLACK, 6, 7);
-        board[7][7] = new Rook(this, Team.BLACK, 7, 7);
+        setUpPiece(new Rook(this, Team.BLACK, 0, 7));
+        setUpPiece(new Knight(this, Team.BLACK, 1, 7));
+        setUpPiece(new Bishop(this, Team.BLACK, 2, 7));
+        setUpPiece(new Queen(this, Team.BLACK, 3, 7));
+        setUpPiece(new King(this, Team.BLACK, 4, 7));
+        setUpPiece(new Bishop(this, Team.BLACK, 5, 7));
+        setUpPiece(new Knight(this, Team.BLACK, 6, 7));
+        setUpPiece(new Rook(this, Team.BLACK, 7, 7));
 
         for (int i = 0; i < SIZE; i++) {
-            board[i][6] = new Pawn(this, Team.BLACK, i, 6);
+            setUpPiece(new Pawn(this, Team.BLACK, i, 6));
+        }
+    }
+
+    /**
+     * Adds a piece to the board and the piece array for its team
+     * @param piece the piece to add
+     */
+    public void setUpPiece(Piece piece) {
+        Point coords = piece.getCoords();
+        Team team = piece.getTeam();
+
+        board[coords.x][coords.y] = piece;
+        if (team == Team.WHITE) {
+            whitePieces.add(piece);
+        } else {
+            blackPieces.add(piece);
         }
     }
 
@@ -90,6 +111,22 @@ public class Board {
      */
     public Piece[][] getBoard() {
         return board;
+    }
+
+    /**
+     * Getter for whitePieces
+     * @return ArrayList of white pieces
+     */
+    public ArrayList<Piece> getWhitePieces() {
+        return whitePieces;
+    }
+
+    /**
+     * Getter for blackPieces
+     * @return ArrayList of black pieces
+     */
+    public ArrayList<Piece> getBlackPieces() {
+        return blackPieces;
     }
 
     /**
