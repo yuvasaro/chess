@@ -148,6 +148,7 @@ public class Board {
         // Move given piece and return the original piece on that square
         setPiece(piece, newCoords);
         setPiece(null, currentCoords);
+        piece.move(newCoords); // Changes coords of Piece object
         return otherPiece;
     }
 
