@@ -6,9 +6,12 @@ import java.util.Map;
  * A class that handles chess move input
  */
 public class MoveHandler {
-    /* Indices of components of the move notation in a list returned by parseMove() 
+    /* Indices of components of the move notation in a list returned by
+    parseMove() 
     
-    Format: [piece (null for pawn), letter/number (or null), x or null, square, =<piece promoted to> or null, +/# (or null)] */
+    Format: [piece (null for pawn), letter/number (or null), x or null, square,
+    =<piece promoted to> or null, castle (O-O or O-O-O) or null, +/# (or null)] 
+    */
 
     // String representation of the piece being moved
     public static final int PIECE = 0;
