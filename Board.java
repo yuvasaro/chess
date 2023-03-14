@@ -255,6 +255,7 @@ public class Board {
         Board board = new Board();
         Piece pawn = board.getPiece(new Point(4, 1));
         board.movePiece(pawn, new Point(4, 3));
+        System.out.println(pawn.getCoords());
         board.saveAsImage();
     }
 }
