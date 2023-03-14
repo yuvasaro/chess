@@ -115,6 +115,18 @@ public class Board {
     }
 
     /**
+     * Sets the piece on a given square
+     * @param piece the piece to set
+     * @param coords the coordinates to put the piece on
+     */
+    public void setPiece(Piece piece, Point coords) {
+        if (!isInBounds(coords)) {
+            return;
+        }
+        board[coords.x][coords.y] = piece;
+    }
+
+    /**
      * Gets the value (in points) of a piece
      * @param piece the piece
      * @return the value of the piece
@@ -129,9 +141,14 @@ public class Board {
      * @param newCoords the new position to move the piece to
      * @return whether the move was successful
      */
-    public boolean movePiece(Piece piece, Point newCoords) {
-        // TODO
-        return false;
+    public Piece movePiece(Piece piece, Point newCoords) {
+        Point currentCoords = piece.getCoords();
+        Piece otherPiece = getPiece(newCoords);
+
+        // Move given piece and return the original piece on that square
+        setPiece(piece, newCoords);
+        setPiece(null, currentCoords);
+        return otherPiece;
     }
 
     /**
@@ -235,6 +252,8 @@ public class Board {
      */
     public static void main(String[] args) throws IOException {
         Board board = new Board();
+        Piece pawn = board.getPiece(new Point(4, 1));
+        board.movePiece(pawn, new Point(4, 3));
         board.saveAsImage();
     }
 }
