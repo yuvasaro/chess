@@ -6,10 +6,10 @@ import java.awt.Point;
  */
 public class Bishop extends Piece {
     // String representation
-    private static final String letter = "b";
+    private static final String LETTER = "b";
 
     // Path to piece image
-    private static final String image = "assets/bishop_%s.png";
+    private static final String IMAGE = "assets/bishop_%s.png";
 
     /**
      * Bishop constructor
@@ -19,7 +19,7 @@ public class Bishop extends Piece {
      * @param col the y coordinate
      */
     public Bishop(Board board, Team team, int row, int col) {
-        super(board, letter, image, team, row, col);
+        super(board, LETTER, IMAGE, team, row, col);
     }
 
     /**

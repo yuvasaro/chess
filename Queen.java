@@ -6,10 +6,10 @@ import java.awt.Point;
  */
 public class Queen extends Piece {
     // String representation
-    private static final String letter = "q";
+    private static final String LETTER = "q";
 
     // Path to piece image
-    private static final String image = "assets/queen_%s.png";
+    private static final String IMAGE = "assets/queen_%s.png";
 
     /**
      * Queen constructor
@@ -19,7 +19,7 @@ public class Queen extends Piece {
      * @param col the y coordinate
      */
     public Queen(Board board, Team team, int row, int col) {
-        super(board, letter, image, team, row, col);
+        super(board, LETTER, IMAGE, team, row, col);
     }
 
     /**

@@ -7,10 +7,10 @@ import java.awt.Point;
  */
 public class Knight extends Piece {
     // String representation
-    private static final String letter = "n";
+    private static final String LETTER = "n";
 
     // Path to piece image
-    private static final String image = "assets/knight_%s.png";
+    private static final String IMAGE = "assets/knight_%s.png";
 
     /**
      * Knight constructor
@@ -20,7 +20,7 @@ public class Knight extends Piece {
      * @param col the y coordinate
      */
     public Knight(Board board, Team team, int row, int col) {
-        super(board, letter, image, team, row, col);
+        super(board, LETTER, IMAGE, team, row, col);
     }
 
     /**
