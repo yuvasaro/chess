@@ -5,16 +5,12 @@ import java.awt.Point;
  * Abstract Piece class
  */
 public abstract class Piece {
-    // Unique ID for all pieces
-    private static int currentID = 1;
-    
     // Instance variables
     private final Board board;
     private final String str;
     private final Team team;
     private Point coords;
     private String image;
-    private int id;
 
     /**
      * Piece constructor
@@ -31,8 +27,19 @@ public abstract class Piece {
         this.coords = new Point(row, col);
         this.image = (team == Team.WHITE) ? 
             String.format(image, "white") : String.format(image, "black");
-        this.id = currentID;
-        currentID++;
+    }
+
+    /**
+     * Piece constructor that duplicates another piece
+     * @param otherPiece the other piece to copy
+     * @param otherBoard the board of the other piece
+     */
+    public Piece(Piece otherPiece, Board otherBoard) {
+        this.board = otherBoard;
+        this.str = otherPiece.str;
+        this.team = otherPiece.team;
+        this.coords = new Point(otherPiece.getCoords());
+        this.image = otherPiece.image;
     }
 
     /**
@@ -73,14 +80,6 @@ public abstract class Piece {
      */
     public String getImagePath() {
         return image;
-    }
-
-    /**
-     * Getter for id
-     * @return the ID of the piece
-     */
-    public int getID() {
-        return id;
     }
 
     /**

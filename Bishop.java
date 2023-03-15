@@ -23,6 +23,15 @@ public class Bishop extends Piece {
     }
 
     /**
+     * Bishop constructor that duplicates another bishop
+     * @param otherBishop the other bishop to copy
+     * @param otherBoard the board of the other bishop
+     */
+    public Bishop(Bishop otherBishop, Board otherBoard) {
+        super(otherBishop, otherBoard);
+    }
+
+    /**
      * Bishop move: Diagonal; NW, NE, SW, SE
      * @return a list of possible squares to move to
      */

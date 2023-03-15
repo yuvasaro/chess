@@ -24,6 +24,15 @@ public class Knight extends Piece {
     }
 
     /**
+     * Knight constructor that duplicates another knight
+     * @param otherKnight the other knight to copy
+     * @param otherBoard the board of the other knight
+     */
+    public Knight(Knight otherKnight, Board otherBoard) {
+        super(otherKnight, otherBoard);
+    }
+
+    /**
      * Knight move: L-shape; 2 squares one way, 1 square perpendicular
      * @return a list of possible squares to move to
      */

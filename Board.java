@@ -68,6 +68,14 @@ public class Board {
     }
 
     /**
+     * Board constructor that duplicates another board
+     * @param otherBoard the other board to copy
+     */
+    public Board(Board otherBoard) {
+        
+    }
+
+    /**
      * Adds a piece to the board and the piece array for its team
      * @param piece the piece to add
      */

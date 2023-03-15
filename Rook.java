@@ -27,6 +27,16 @@ public class Rook extends Piece {
     }
 
     /**
+     * Rook constructor that duplicates another rook
+     * @param otherRook the other rook to copy
+     * @param otherBoard the board of the other rook
+     */
+    public Rook(Rook otherRook, Board otherBoard) {
+        super(otherRook, otherBoard);
+        this.hasMoved = otherRook.hasMoved;
+    }
+
+    /**
      * Rook move: Horizontal and vertical (N, W, S, E)
      * @return a list of possible squares to move to
      */

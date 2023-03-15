@@ -27,6 +27,15 @@ public class King extends Piece {
     }
 
     /**
+     * King constructor that duplicates another king
+     * @param otherKing the other king to copy
+     * @param otherBoard the board of the other king
+     */
+    public King(King otherKing, Board otherBoard) {
+        super(otherKing, otherBoard);
+    }
+
+    /**
      * King move: 1 square in all directions
      * @return a list of possible squares to move to
      */

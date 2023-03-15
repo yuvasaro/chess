@@ -23,6 +23,15 @@ public class Queen extends Piece {
     }
 
     /**
+     * Queen constructor that duplicates another queen
+     * @param otherQueen the other queen to copy
+     * @param otherBoard the board of the other queen
+     */
+    public Queen(Queen otherQueen, Board otherBoard) {
+        super(otherQueen, otherBoard);
+    }
+
+    /**
      * Queen move: Diagonal, horizontal, vertical
      * @return a list of possible squares to move to
      */

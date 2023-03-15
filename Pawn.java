@@ -31,6 +31,17 @@ public class Pawn extends Piece {
     }
 
     /**
+     * Pawn constructor that duplicates another pawn
+     * @param otherPawn the other pawn to copy
+     * @param otherBoard the board of the other pawn
+     */
+    public Pawn(Pawn otherPawn, Board otherBoard) {
+        super(otherPawn, otherBoard);
+        this.hasMoved = otherPawn.hasMoved;
+        this.moveDir = otherPawn.moveDir;
+    }
+
+    /**
      * Pawn move: 1 square forward (2 squares if first turn), capture
      * diagonally 1 square, promotion at the opposite side
      * @return a list of possible squares to move to
