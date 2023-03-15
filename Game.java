@@ -177,9 +177,17 @@ public class Game {
             temp.translate(castleDirection, 0);
         }
 
-        // Castle
+        // Move king and rook to destination
         board.movePiece(king, kingDestination);
         board.movePiece(rook, rookDestination);
+        
+        // Move the pieces back if the king moves into check, return false
+        if (isInCheck()) {
+            board.movePiece(king, kingCoords);
+            board.movePiece(rook, rookCoords);
+            return false;
+        }
+
         return true;
     }
 
@@ -221,16 +229,16 @@ public class Game {
 
                 // Check if current pawn square matches pawn letter
                 if (pawnSquare.substring(0, 1).equals(pawnLetter)) {
+                    // Check that pawn is on the right rank
+                    if (whiteToPlay && pawnCoords.y != 6) { // 7th rank
+                        return false;
+                    } else if (pawnCoords.y != 1) { // 2nd rank
+                        return false;
+                    }
                     pawn = (Pawn) piece;
+                    break;
                 }
             }
-        }
-
-        // Check that pawn is on the right rank
-        if (whiteToPlay || pawnCoords.y != 6) { // 7th rank
-            return false;
-        } else if (pawnCoords.y != 1) { // 2nd rank
-            return false;
         }
 
         // Get string word of promotion piece class (ex. "Queen")
@@ -256,6 +264,15 @@ public class Game {
 
         // Get captured piece and remove from opposite team pieces
         Piece captured = board.movePiece(pawn, destination);
+
+        // Make sure moving the pawn doesn't cause the king to be in check
+        if (isInCheck()) {
+            board.movePiece(pawn, pawnCoords);
+            board.setPiece(captured, destination);
+            return false;
+        }
+
+        // Remove captured piece from opposite team pieces
         if (captured != null) {
             if (whiteToPlay) {
                 board.getBlackPieces().remove(captured);
@@ -266,7 +283,7 @@ public class Game {
 
         // Remove pawn from team pieces and board
         pieces.remove(pawn);
-        board.setPiece(null, pawnCoords);
+        board.setPiece(null, destination);
 
         // Setup promoted piece
         board.setUpPiece(promoted);
@@ -289,6 +306,7 @@ public class Game {
             pieceString = "P";
         }
         Piece pieceToMove = null;
+        Point pieceCoords = null;
         
         // Get all pieces that could be the one to move
         ArrayList<Piece> candidates = new ArrayList<>();
@@ -330,8 +348,19 @@ public class Game {
             }
         }
 
+        pieceCoords = pieceToMove.getCoords();
+
         // Move the piece and remove any captured pieces
         Piece captured = board.movePiece(pieceToMove, destination);
+
+        // Make sure moving the piece doesn't cause the king to be in check
+        if (isInCheck()) {
+            board.movePiece(pieceToMove, pieceCoords);
+            board.setPiece(captured, destination);
+            return false;
+        }
+
+        // Remove captured piece from opposite team pieces
         if (captured != null) {
             if (whiteToPlay) {
                 board.getBlackPieces().remove(captured);
@@ -339,6 +368,7 @@ public class Game {
                 board.getWhitePieces().remove(captured);
             }
         }
+        
         return true;
     }
 
