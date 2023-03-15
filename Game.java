@@ -24,6 +24,11 @@ public class Game {
     public Game() {
         whiteToPlay = true;
         board = new Board();
+        try {
+            board.saveAsImage();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -55,6 +60,12 @@ public class Game {
                 // Validate move and execute it if valid
                 validMove = move(moveComponents);
             } while (!validMove);
+
+            try {
+                board.saveAsImage();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             // Toggle whiteToPlay to change to next player's turn
             whiteToPlay = !whiteToPlay;
@@ -321,6 +332,7 @@ public class Game {
             Piece piece = candidates.get(i);
             if (!piece.getMoves().contains(destination)) {
                 candidates.remove(piece);
+                i--;
             }
         }
 
@@ -368,7 +380,7 @@ public class Game {
                 board.getWhitePieces().remove(captured);
             }
         }
-        
+
         return true;
     }
 

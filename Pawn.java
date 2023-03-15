@@ -42,12 +42,13 @@ public class Pawn extends Piece {
 
         // One square ahead
         Point oneSquareAhead = new Point(coords.x, coords.y + moveDir);
-        if (board.getPiece(oneSquareAhead) == null) {
+        Piece oneAheadPiece = board.getPiece(oneSquareAhead);
+        if (oneAheadPiece == null) {
             possibleMoves.add(oneSquareAhead);
         }
 
         // Two squares ahead
-        if (!hasMoved) {
+        if (!hasMoved && oneAheadPiece == null) {
             Point twoSquaresAhead = new Point(coords.x, coords.y + 2 * moveDir);
             if (board.getPiece(twoSquaresAhead) == null) {
                 possibleMoves.add(twoSquaresAhead);

@@ -128,6 +128,11 @@ public class MoveHandler {
             return false;
         }
 
+        // There can't be a specifier without a piece or capture
+        else if (specifier != null && piece == null && capture == null) {
+            return false;
+        }
+
         // Promotion: square and promotion must be not null, 
         // specifier, capture, and checkMate can be not null
         else if (promotion != null) {
@@ -159,7 +164,7 @@ public class MoveHandler {
         int letterCoord = letterCoordMapping.get(letter);
         int numberCoord = Integer.parseInt(number) - 1;
 
-        return new Point(numberCoord, letterCoord);
+        return new Point(letterCoord, numberCoord);
     }
 
     /**
@@ -188,14 +193,9 @@ public class MoveHandler {
      * @param args
      */
     public static void main(String[] args) {
-        String[] move = parseMove("my move is Ndxc7+");
-        for (String component : move) {
-            System.out.println(component);
-        }
-        System.out.println();
-        move = parseMove("xb8=Q#");
-        for (String component : move) {
-            System.out.println(component);
-        }
+        System.out.println(toCoords("e4"));
+        System.out.println(toCoords("e6"));
+        System.out.println(toSquare(new Point(4, 3)));
+        System.out.println(toSquare(new Point(4, 5)));
     }
 }
