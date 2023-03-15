@@ -45,13 +45,16 @@ public class Game {
             System.out.println();
 
             do {
+                // Take input
                 System.out.print(String.format("%s to play: ", whoPlays));
                 input = scanner.next();
+
+                // Parse move
                 moveComponents = MoveHandler.parseMove(input);
+
+                // Validate move and execute it if valid
                 validMove = move(moveComponents);
             } while (!validMove);
-
-            // TODO: Make the move
 
             // Toggle whiteToPlay to change to next player's turn
             whiteToPlay = !whiteToPlay;
@@ -223,7 +226,15 @@ public class Game {
                 e.printStackTrace();
             }
 
-            board.movePiece(pawn, destination);
+            // Get captured piece and remove from opposite team pieces
+            Piece captured = board.movePiece(pawn, destination);
+            if (captured != null) {
+                if (whiteToPlay) {
+                    board.getBlackPieces().remove(captured);
+                } else {
+                    board.getWhitePieces().remove(captured);
+                }
+            }
 
             // Remove pawn from team pieces and board
             pieces.remove(pawn);
@@ -236,14 +247,66 @@ public class Game {
 
         // All other moves
         else {
-            String piece = moveComponents[MoveHandler.PIECE];
-            if (piece == null) { // Pawn
-                piece = "P";
+            Point destination = MoveHandler.toCoords(
+                moveComponents[MoveHandler.SQUARE]);
+            String pieceString = moveComponents[MoveHandler.PIECE];
+            String specifier = moveComponents[MoveHandler.SPECIFIER];
+            if (pieceString == null) { // Pawn
+                pieceString = "P";
+            }
+            Piece pieceToMove = null;
+            
+            // Get all pieces that could be the one to move
+            ArrayList<Piece> candidates = new ArrayList<>();
+            for (Piece piece : pieces) {
+                if (piece.toString().toUpperCase().equals(pieceString)) {
+                    candidates.add(piece);
+                }
             }
 
-        }
+            // Get only candidates that can move to the destination square
+            for (int i = 0; i < candidates.size(); i++) {
+                Piece piece = candidates.get(i);
+                if (!piece.getMoves().contains(destination)) {
+                    candidates.remove(piece);
+                }
+            }
 
-        return true;
+            // If no candidates, return false
+            if (candidates.isEmpty()) {
+                return false;
+            }
+            // If only one piece, select it
+            if (candidates.size() == 1) {
+                pieceToMove = candidates.get(0);
+            } 
+            // Otherwise use specifier to select piece
+            else {
+                for (Piece piece : candidates) {
+                    String currentSquare = MoveHandler.toSquare(
+                        piece.getCoords());
+
+                    // If specifier (letter or number) matches piece square, 
+                    // select it
+                    if (currentSquare.substring(0, 1).equals(specifier) || 
+                            currentSquare.substring(1).equals(specifier)) {
+                        pieceToMove = piece;
+                        break;
+                    }
+                }
+            }
+
+            // Move the piece and remove any captured pieces
+            Piece captured = board.movePiece(pieceToMove, destination);
+            if (captured != null) {
+                if (whiteToPlay) {
+                    board.getBlackPieces().remove(captured);
+                } else {
+                    board.getWhitePieces().remove(captured);
+                }
+            }
+            return true;
+        }
     }
 
     /**
