@@ -59,6 +59,9 @@ public class Game {
 
                 // Validate move and execute it if valid
                 validMove = move(moveComponents);
+                if (!validMove) {
+                    System.out.println("Invalid move.");
+                }
             } while (!validMove);
 
             try {
@@ -243,7 +246,7 @@ public class Game {
                     // Check that pawn is on the right rank
                     if (whiteToPlay && pawnCoords.y != 6) { // 7th rank
                         return false;
-                    } else if (pawnCoords.y != 1) { // 2nd rank
+                    } else if (!whiteToPlay && pawnCoords.y != 1) { // 2nd rank
                         return false;
                     }
                     pawn = (Pawn) piece;
@@ -389,7 +392,36 @@ public class Game {
      * @return whether the current player is in check
      */
     private boolean isInCheck() {
-        // TODO
+        ArrayList<Piece> whitePieces = board.getWhitePieces();
+        ArrayList<Piece> blackPieces = board.getBlackPieces();
+        Point kingCoords = null;
+
+        // Set team pieces and opposite team pieces based on whose turn it is
+        ArrayList<Piece> teamPieces;
+        ArrayList<Piece> oppositeTeamPieces;
+        if (whiteToPlay) {
+            teamPieces = whitePieces;
+            oppositeTeamPieces = blackPieces;
+        } else {
+            teamPieces = blackPieces;
+            oppositeTeamPieces = whitePieces;
+        }
+
+        // Get team king coords
+        for (Piece piece : teamPieces) {
+            if (piece instanceof King) {
+                kingCoords = piece.getCoords();
+                break;
+            }
+        }
+
+        // Check if opposite team pieces are attacking the king
+        for (Piece piece : oppositeTeamPieces) {
+            if (piece.getMoves().contains(kingCoords)) {
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -398,7 +430,21 @@ public class Game {
      * @return whether the game has ended or not
      */
     private boolean gameEnd() {
-        // TODO
+        ArrayList<Piece> pieces;
+        if (whiteToPlay) {
+            pieces = board.getWhitePieces();
+        } else {
+            pieces = board.getBlackPieces();
+        }
+
+        // Check whether the team is in check and if they have no moves
+        boolean inCheck = isInCheck();
+        boolean hasNoMoves;
+
+        for (Piece piece : pieces) {
+
+        }
+
         return false;
     }
 }
