@@ -231,6 +231,7 @@ public class Game {
 
             // Setup promoted piece
             board.setUpPiece(promoted);
+            return true;
         }
 
         // All other moves
