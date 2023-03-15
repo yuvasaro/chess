@@ -33,6 +33,7 @@ public class King extends Piece {
      */
     public King(King otherKing, Board otherBoard) {
         super(otherKing, otherBoard);
+        this.hasMoved = otherKing.hasMoved;
     }
 
     /**
