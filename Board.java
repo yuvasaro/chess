@@ -85,17 +85,9 @@ public class Board {
                     continue;
                 }
 
-                // Create instance of the specific class of the other piece
-                try {
-                    Class<?> pieceClass = otherPiece.getClass();
-                    Constructor<?> constructor = pieceClass.getConstructor(
-                        pieceClass, Board.class);
-                    Piece duplicatePiece = (Piece) constructor.newInstance(
-                        otherPiece, board);
-                    setUpPiece(duplicatePiece);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                // Create a copy of the other piece
+                Piece duplicatePiece = otherPiece.copyInstance(otherBoard);
+                setUpPiece(duplicatePiece);
             }
         }
     }
