@@ -24,12 +24,13 @@ public class Knight extends Piece {
     }
 
     /**
-     * Knight constructor that duplicates another knight
-     * @param otherKnight the other knight to copy
-     * @param otherBoard the board of the other knight
+     * Returns a copy of this knight for another board
+     * @param otherBoard the other board
      */
-    public Knight(Knight otherKnight, Board otherBoard) {
-        super(otherKnight, otherBoard);
+    public Knight copyInstance(Board otherBoard) {
+        Point coords = getCoords();
+        Knight copy = new Knight(otherBoard, getTeam(), coords.x, coords.y);
+        return copy;
     }
 
     /**

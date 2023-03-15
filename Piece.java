@@ -30,19 +30,6 @@ public abstract class Piece {
     }
 
     /**
-     * Piece constructor that duplicates another piece
-     * @param otherPiece the other piece to copy
-     * @param otherBoard the board of the other piece
-     */
-    public Piece(Piece otherPiece, Board otherBoard) {
-        this.board = otherBoard;
-        this.str = otherPiece.str;
-        this.team = otherPiece.team;
-        this.coords = new Point(otherPiece.getCoords());
-        this.image = otherPiece.image;
-    }
-
-    /**
      * toString() getter for str
      * @return the string representation of the piece
      */
@@ -95,6 +82,13 @@ public abstract class Piece {
      * @return a list of possible squares to move to
      */
     public abstract ArrayList<Point> getMoves();
+
+    /**
+     * Returns a copy of this piece for another board
+     * @param otherBoard the other board
+     * @return the copy of the piece
+     */
+    public abstract Piece copyInstance(Board otherBoard);
 }
 
 /**

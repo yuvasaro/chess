@@ -23,12 +23,13 @@ public class Bishop extends Piece {
     }
 
     /**
-     * Bishop constructor that duplicates another bishop
-     * @param otherBishop the other bishop to copy
-     * @param otherBoard the board of the other bishop
+     * Returns a copy of this bishop for another board
+     * @param otherBoard the other board
      */
-    public Bishop(Bishop otherBishop, Board otherBoard) {
-        super(otherBishop, otherBoard);
+    public Bishop copyInstance(Board otherBoard) {
+        Point coords = getCoords();
+        Bishop copy = new Bishop(otherBoard, getTeam(), coords.x, coords.y);
+        return copy;
     }
 
     /**

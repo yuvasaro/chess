@@ -10,6 +10,7 @@ import java.util.Map;
 public class Game {
     private boolean whiteToPlay;
     private Board board;
+    private Team winner;
     private Map<String, String> letterPieceMapping = Map.of(
         "N", "Knight",
         "B", "Bishop",
@@ -24,6 +25,7 @@ public class Game {
     public Game() {
         whiteToPlay = true;
         board = new Board();
+        winner = null;
         try {
             board.saveAsImage();
         } catch (Exception e) {
@@ -75,9 +77,19 @@ public class Game {
 
         } while (!gameEnd());
 
-        System.out.println("\nEnd game.");
-
         scanner.close();
+
+        System.out.println("\nEnd game.");
+        System.out.println();
+
+        // Print winner
+        if (winner == Team.WHITE) {
+            System.out.println("White wins!");
+        } else if (winner == Team.BLACK) {
+            System.out.println("Black wins!");
+        } else {
+            System.out.println("It's a draw!");
+        }
     }
 
     /**
@@ -196,7 +208,7 @@ public class Game {
         board.movePiece(rook, rookDestination);
         
         // Move the pieces back if the king moves into check, return false
-        if (isInCheck()) {
+        if (isInCheck(board)) {
             board.movePiece(king, kingCoords);
             board.movePiece(rook, rookCoords);
             return false;
@@ -280,7 +292,7 @@ public class Game {
         Piece captured = board.movePiece(pawn, destination);
 
         // Make sure moving the pawn doesn't cause the king to be in check
-        if (isInCheck()) {
+        if (isInCheck(board)) {
             board.movePiece(pawn, pawnCoords);
             board.setPiece(captured, destination);
             return false;
@@ -369,7 +381,7 @@ public class Game {
         Piece captured = board.movePiece(pieceToMove, destination);
 
         // Make sure moving the piece doesn't cause the king to be in check
-        if (isInCheck()) {
+        if (isInCheck(board)) {
             board.movePiece(pieceToMove, pieceCoords);
             board.setPiece(captured, destination);
             return false;
@@ -391,9 +403,9 @@ public class Game {
      * Returns whether the current player is in check
      * @return whether the current player is in check
      */
-    private boolean isInCheck() {
-        ArrayList<Piece> whitePieces = board.getWhitePieces();
-        ArrayList<Piece> blackPieces = board.getBlackPieces();
+    private boolean isInCheck(Board theBoard) {
+        ArrayList<Piece> whitePieces = theBoard.getWhitePieces();
+        ArrayList<Piece> blackPieces = theBoard.getBlackPieces();
         Point kingCoords = null;
 
         // Set team pieces and opposite team pieces based on whose turn it is
@@ -430,21 +442,55 @@ public class Game {
      * @return whether the game has ended or not
      */
     private boolean gameEnd() {
+        // Duplicate the board and get its pieces
+        Board duplicateBoard = new Board(board);
         ArrayList<Piece> pieces;
         if (whiteToPlay) {
-            pieces = board.getWhitePieces();
+            pieces = duplicateBoard.getWhitePieces();
         } else {
-            pieces = board.getBlackPieces();
+            pieces = duplicateBoard.getBlackPieces();
         }
 
         // Check whether the team is in check and if they have no moves
-        boolean inCheck = isInCheck();
-        boolean hasNoMoves;
+        boolean inCheck = isInCheck(board);
+        boolean hasNoMoves = true;
 
+        // Check every possible move
         for (Piece piece : pieces) {
+            Point initialCoords = piece.getCoords();
+            
+            for (Point destination : piece.getMoves()) {
+                // Move piece, check if in check, move piece back
+                Piece captured = duplicateBoard.movePiece(piece, destination);
+                if (!isInCheck(duplicateBoard)) {
+                    hasNoMoves = false;
+                    break;
+                }
+                duplicateBoard.movePiece(piece, initialCoords);
+                duplicateBoard.setPiece(captured, destination);
+            }
 
+            // If found a possible move, break
+            if (!hasNoMoves) {
+                break;
+            }
         }
 
-        return false;
+        // There is at least one legal move
+        if (!hasNoMoves) {
+            return false;
+        }
+
+        // Note: Now implied that there are no legal moves
+
+        // Checkmate - winner is opposite team
+        if (inCheck) {
+            winner = whiteToPlay ? Team.BLACK : Team.WHITE;
+            return true;
+        }
+        // Stalemate - winner stays null
+        else {
+            return true;
+        }
     }
 }

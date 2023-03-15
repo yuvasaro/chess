@@ -31,14 +31,14 @@ public class Pawn extends Piece {
     }
 
     /**
-     * Pawn constructor that duplicates another pawn
-     * @param otherPawn the other pawn to copy
-     * @param otherBoard the board of the other pawn
+     * Returns a copy of this pawn for another board
+     * @param otherBoard the other board
      */
-    public Pawn(Pawn otherPawn, Board otherBoard) {
-        super(otherPawn, otherBoard);
-        this.hasMoved = otherPawn.hasMoved;
-        this.moveDir = otherPawn.moveDir;
+    public Pawn copyInstance(Board otherBoard) {
+        Point coords = getCoords();
+        Pawn copy = new Pawn(otherBoard, getTeam(), coords.x, coords.y);
+        copy.hasMoved = this.hasMoved;
+        return copy;
     }
 
     /**

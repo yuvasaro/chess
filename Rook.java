@@ -27,13 +27,14 @@ public class Rook extends Piece {
     }
 
     /**
-     * Rook constructor that duplicates another rook
-     * @param otherRook the other rook to copy
-     * @param otherBoard the board of the other rook
+     * Returns a copy of this rook for another board
+     * @param otherBoard the other board
      */
-    public Rook(Rook otherRook, Board otherBoard) {
-        super(otherRook, otherBoard);
-        this.hasMoved = otherRook.hasMoved;
+    public Rook copyInstance(Board otherBoard) {
+        Point coords = getCoords();
+        Rook copy = new Rook(otherBoard, getTeam(), coords.x, coords.y);
+        copy.hasMoved = this.hasMoved;
+        return copy;
     }
 
     /**

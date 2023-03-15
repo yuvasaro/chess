@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
 /**
@@ -72,7 +73,31 @@ public class Board {
      * @param otherBoard the other board to copy
      */
     public Board(Board otherBoard) {
-        
+        board = new Piece[SIZE][SIZE];
+        whitePieces = new ArrayList<>();
+        blackPieces = new ArrayList<>();
+
+        // Duplicate each piece on the other board
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                Piece otherPiece = otherBoard.getPiece(new Point(i, j));
+                if (otherPiece == null) {
+                    continue;
+                }
+
+                // Create instance of the specific class of the other piece
+                try {
+                    Class<?> pieceClass = otherPiece.getClass();
+                    Constructor<?> constructor = pieceClass.getConstructor(
+                        pieceClass, Board.class);
+                    Piece duplicatePiece = (Piece) constructor.newInstance(
+                        otherPiece, board);
+                    setUpPiece(duplicatePiece);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     /**

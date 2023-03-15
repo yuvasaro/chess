@@ -23,12 +23,13 @@ public class Queen extends Piece {
     }
 
     /**
-     * Queen constructor that duplicates another queen
-     * @param otherQueen the other queen to copy
-     * @param otherBoard the board of the other queen
+     * Returns a copy of this queen for another board
+     * @param otherBoard the other board
      */
-    public Queen(Queen otherQueen, Board otherBoard) {
-        super(otherQueen, otherBoard);
+    public Queen copyInstance(Board otherBoard) {
+        Point coords = getCoords();
+        Queen copy = new Queen(otherBoard, getTeam(), coords.x, coords.y);
+        return copy;
     }
 
     /**

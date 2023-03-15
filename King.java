@@ -27,13 +27,14 @@ public class King extends Piece {
     }
 
     /**
-     * King constructor that duplicates another king
-     * @param otherKing the other king to copy
-     * @param otherBoard the board of the other king
+     * Returns a copy of this king for another board
+     * @param otherBoard the other board
      */
-    public King(King otherKing, Board otherBoard) {
-        super(otherKing, otherBoard);
-        this.hasMoved = otherKing.hasMoved;
+    public King copyInstance(Board otherBoard) {
+        Point coords = getCoords();
+        King copy = new King(otherBoard, getTeam(), coords.x, coords.y);
+        copy.hasMoved = this.hasMoved;
+        return copy;
     }
 
     /**
