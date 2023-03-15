@@ -75,7 +75,7 @@ public class Board {
         Point coords = piece.getCoords();
         Team team = piece.getTeam();
 
-        board[coords.x][coords.y] = piece;
+        setPiece(piece, coords);
         if (team == Team.WHITE) {
             whitePieces.add(piece);
         } else {

@@ -80,6 +80,14 @@ public class King extends Piece {
     }
 
     /**
+     * Returns whether the king has moved
+     * @return whether the king has moved
+     */
+    public boolean hasMoved() {
+        return hasMoved;
+    }
+
+    /**
      * Moves the king to its new square and sets hasMoved to true
      * @param newCoords the new coordinates to move to
      */

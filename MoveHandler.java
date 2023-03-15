@@ -134,6 +134,12 @@ public class MoveHandler {
             if (piece != null) {
                 return false;
             }
+
+            // Check that the promotion is on the correct rank
+            Point promotionCoords = toCoords(square);
+            if (promotionCoords.y != 7 || promotionCoords.y != 0) {
+                return false;
+            }
         }
 
         return true;

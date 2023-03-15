@@ -74,6 +74,14 @@ public class Pawn extends Piece {
     }
 
     /**
+     * Returns whether the pawn has moved
+     * @return whether the pawn has moved
+     */
+    public boolean hasMoved() {
+        return hasMoved;
+    }
+
+    /**
      * Moves the pawn to its new square and sets hasMoved to true
      * @param newCoords the new coordinates to move to
      */

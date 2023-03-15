@@ -81,6 +81,14 @@ public class Rook extends Piece {
     }
 
     /**
+     * Returns whether the rook has moved
+     * @return whether the rook has moved
+     */
+    public boolean hasMoved() {
+        return hasMoved;
+    }
+
+    /**
      * Moves the rook to its new square and sets hasMoved to true
      * @param newCoords the new coordinates to move to
      */
