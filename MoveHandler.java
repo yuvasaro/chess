@@ -1,5 +1,7 @@
 import java.awt.Point;
 import java.util.regex.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.Map;
 
 /**
@@ -98,7 +100,16 @@ public class MoveHandler {
      * @param moveComponents the array of move components
      * @return whether the move is theoretically valid
      */
-    public static boolean validMoveComponents(String[] moveComponents) {
+    public static boolean validMoveComponents(String moveInput, 
+            String[] moveComponents) {
+        // Entire input must be just the move (avoids confusion and bugs)
+        String joined = Stream.of(moveComponents)
+            .filter(s -> s != null && !s.isEmpty())
+            .collect(Collectors.joining(""));;
+        if (!joined.equals(moveInput)) {
+            return false;
+        }
+
         // Unpack move components
         String piece = moveComponents[PIECE];
         String specifier = moveComponents[SPECIFIER];

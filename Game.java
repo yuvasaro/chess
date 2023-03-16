@@ -53,13 +53,10 @@ public class Game {
             do {
                 // Take input
                 System.out.print(String.format("%s to play: ", whoPlays));
-                input = scanner.next();
-
-                // Parse move
-                moveComponents = MoveHandler.parseMove(input);
-
+                input = scanner.nextLine();
+                
                 // Validate move and execute it if valid
-                validMove = move(moveComponents);
+                validMove = move(input);
                 if (!validMove) {
                     System.out.println("Invalid move.");
                 }
@@ -96,9 +93,12 @@ public class Game {
      * @param moveComponents a string array of the move's components
      * @return whether the move was valid and successfully executed
      */
-    private boolean move(String[] moveComponents) {
+    private boolean move(String moveInput) {
+        // Parse move
+        String[] moveComponents = MoveHandler.parseMove(moveInput);
+
         // Check if the move notation represents a valid move
-        if (!MoveHandler.validMoveComponents(moveComponents)) {
+        if (!MoveHandler.validMoveComponents(moveInput, moveComponents)) {
             return false;
         }
 
