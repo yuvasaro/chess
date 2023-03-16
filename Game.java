@@ -388,34 +388,24 @@ public class Game {
         
         // EN PASSANT bruh
         boolean enPassant = false;
-        Point enPassantVictimCoords = null;
-        if (pieceToMove instanceof Pawn) {
-            if (captured == null) {
-                // Captured pawn
-                if (destination.x == pieceCoords.x + 1) {
-                    enPassantVictimCoords = new Point(
-                        pieceCoords.x + 1, pieceCoords.y);
-                    captured = board.getPiece(enPassantVictimCoords);
-                    enPassant = true;
-                } else if (destination.x == pieceCoords.x - 1) {
-                    enPassantVictimCoords = new Point(
-                        pieceCoords.x - 1, pieceCoords.y);
-                    captured = board.getPiece(enPassantVictimCoords);
-                    enPassant = true;
-                }
-            }
+        Point enPassantVictimCoords = checkEnPassant(board, pieceToMove, 
+            pieceCoords, captured, destination);
+        if (enPassantVictimCoords != null) {
+            enPassant = true;
         }
-
         if (enPassant) {
             board.setPiece(null, enPassantVictimCoords);
         }
+        
         capture(captured, oppositeTeamPieces, false);
 
         // Make sure moving the piece doesn't cause the king to be in check
         if (isInCheck(board)) {
-            board.undoMovePiece(pieceToMove, pieceCoords, captured);
             if (enPassant) {
+                board.undoMovePiece(pieceToMove, pieceCoords, null);
                 board.setPiece(captured, enPassantVictimCoords);
+            } else {
+                board.undoMovePiece(pieceToMove, pieceCoords, captured);
             }
             capture(captured, oppositeTeamPieces, true); // Undo capture
             return false;
@@ -473,6 +463,45 @@ public class Game {
     }
 
     /**
+     * Checks whether the move is en passant
+     * @param theBoard the board to check
+     * @param pieceToMove the piece to check
+     * @param pieceCoords the initial piece coordinates
+     * @param captured the given captured piece
+     * @param destination the destination square
+     * @return a point if there is en passant, otherwise null
+     */
+    private Point checkEnPassant(Board theBoard, Piece pieceToMove, 
+            Point pieceCoords, Piece captured, Point destination) {
+        // EN PASSANT bruh
+        boolean enPassant = false;
+        Point enPassantVictimCoords = null;
+
+        if (pieceToMove instanceof Pawn) {
+            if (captured == null) {
+                // Captured pawn
+                if (destination.x == pieceCoords.x + 1) {
+                    enPassantVictimCoords = new Point(
+                        pieceCoords.x + 1, pieceCoords.y);
+                    captured = theBoard.getPiece(enPassantVictimCoords);
+                    enPassant = true;
+                } else if (destination.x == pieceCoords.x - 1) {
+                    enPassantVictimCoords = new Point(
+                        pieceCoords.x - 1, pieceCoords.y);
+                    captured = theBoard.getPiece(enPassantVictimCoords);
+                    enPassant = true;
+                }
+            }
+        }
+
+        // Return coords if en passant, else null
+        if (enPassant) {
+            return enPassantVictimCoords;
+        }
+        return null;
+    }
+
+    /**
      * Returns whether the current player is in check
      * @return whether the current player is in check
      */
@@ -525,29 +554,15 @@ public class Game {
                 
                 // EN PASSANT bruh
                 boolean enPassant = false;
-                Point enPassantVictimCoords = null;
-                if (piece instanceof Pawn) {
-                    if (captured == null) {
-                        // Captured pawn
-                        if (destination.x == initialCoords.x + 1) {
-                            enPassantVictimCoords = new Point(
-                                initialCoords.x + 1, initialCoords.y);
-                            captured = duplicateBoard.getPiece(
-                                enPassantVictimCoords);
-                            enPassant = true;
-                        } else if (destination.x == initialCoords.x - 1) {
-                            enPassantVictimCoords = new Point(
-                                initialCoords.x - 1, initialCoords.y);
-                            captured = duplicateBoard.getPiece(
-                                enPassantVictimCoords);
-                            enPassant = true;
-                        }
-                    }
+                Point enPassantVictimCoords = checkEnPassant(board, piece, 
+                    initialCoords, captured, destination);
+                if (enPassantVictimCoords != null) {
+                    enPassant = true;
                 }
-
                 if (enPassant) {
                     duplicateBoard.setPiece(null, enPassantVictimCoords);
                 }
+
                 capture(captured, oppositeTeamPieces, false);
 
                 // Check if in check
@@ -557,9 +572,12 @@ public class Game {
                 }
 
                 // Move piece back
-                duplicateBoard.undoMovePiece(piece, initialCoords, captured);
                 if (enPassant) {
+                    duplicateBoard.undoMovePiece(piece, initialCoords, null);
                     duplicateBoard.setPiece(captured, enPassantVictimCoords);
+                } else {
+                    duplicateBoard.undoMovePiece(piece, initialCoords, 
+                        captured);
                 }
                 capture(captured, oppositeTeamPieces, true);
             }
