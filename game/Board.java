@@ -140,6 +140,20 @@ public class Board {
     }
 
     /**
+     * Returns the board flipped
+     * @return the board flipped
+     */
+    public Piece[][] flipBoard() {
+        Piece[][] flipped = new Piece[SIZE][SIZE];
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                flipped[SIZE - i - 1][SIZE - j - 1] = board[i][j];
+            }
+        }
+        return flipped;
+    }
+
+    /**
      * Getter for whitePieces
      * @return ArrayList of white pieces
      */
@@ -257,7 +271,9 @@ public class Board {
      * Saves the current board position as a PNG image
      * @throws IOException if an image file is not found
      */
-    public void saveAsImage() throws IOException {
+    public void saveAsImage(boolean whiteToPlay) throws IOException {
+        Piece[][] theBoard = whiteToPlay ? getBoard() : flipBoard();
+
         // RGB byte shifts
         int redByteShift = 16;
         int greenByteShift = 8;
@@ -274,7 +290,7 @@ public class Board {
         // Loop through all pieces on the board and add draw them
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                Piece piece = getPiece(new Point(i, j));
+                Piece piece = theBoard[i][j];
                 if (piece == null) { // No piece on square
                     continue;
                 }
@@ -334,6 +350,6 @@ public class Board {
         Piece pawn = board.getPiece(new Point(4, 1));
         board.movePiece(pawn, new Point(4, 3));
         System.out.println(pawn.getCoords());
-        board.saveAsImage();
+        board.saveAsImage(true);
     }
 }

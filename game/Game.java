@@ -30,7 +30,7 @@ public class Game {
         board = new Board();
         winner = null;
         try {
-            board.saveAsImage();
+            board.saveAsImage(whiteToPlay);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -109,14 +109,15 @@ public class Game {
                 break;
             }
 
+            // Toggle whiteToPlay to change to next player's turn
+            whiteToPlay = !whiteToPlay;
+
+            // Save board image
             try {
-                board.saveAsImage();
+                board.saveAsImage(whiteToPlay);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            // Toggle whiteToPlay to change to next player's turn
-            whiteToPlay = !whiteToPlay;
 
         } while (!gameEnd());
 
