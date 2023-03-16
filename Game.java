@@ -38,6 +38,11 @@ public class Game {
      * Starts the game, handles game logic
      */
     public void start() {
+        // Store booleans for resign and draw
+        boolean resign = false;
+        boolean drawOffered = false;
+        boolean drawAccepted = false;
+
         Scanner scanner = new Scanner(System.in);
         System.out.println("Start game.");
 
@@ -54,6 +59,41 @@ public class Game {
                 // Take input
                 System.out.print(String.format("%s to play: ", whoPlays));
                 input = scanner.nextLine();
+
+                // Check for resign or draw
+                if (input.toLowerCase().equals("resign")) {
+                    resign = true;
+                    break;
+                } else if (input.toLowerCase().equals("draw")) {
+                    drawOffered = true;
+                    whiteToPlay = !whiteToPlay;
+                    whoPlays = whiteToPlay ? "White" : "Black";
+
+                    // Prompt other player
+                    String answer = null;
+                    do {
+                        System.out.print(String.format(
+                            "%s, accept draw? (Yes/No): ", whoPlays));
+                        answer = scanner.nextLine().toLowerCase();
+                        if (answer.equals("yes") || answer.equals("y")) {
+                            drawAccepted = true;
+                            break;
+                        } else if (answer.equals("no") || 
+                                answer.equals("n")) {
+                            // Reset
+                            drawOffered = false;
+                        } else {
+                            answer = null;
+                        }
+                    } while (answer == null);
+
+                    if (drawAccepted) {
+                        break;
+                    } else {
+                        validMove = true;
+                        continue;
+                    }
+                }
                 
                 // Validate move and execute it if valid
                 validMove = move(input);
@@ -61,6 +101,11 @@ public class Game {
                     System.out.println("Invalid move.");
                 }
             } while (!validMove);
+
+            // Stop game if resign or draw
+            if (resign || (drawOffered && drawAccepted)) {
+                break;
+            }
 
             try {
                 board.saveAsImage();
@@ -77,6 +122,15 @@ public class Game {
 
         System.out.println("\nEnd game.");
         System.out.println();
+
+        // Determine winner if a player resigned
+        if (resign) {
+            if (whiteToPlay) {
+                winner = Team.BLACK;
+            } else {
+                winner = Team.WHITE;
+            }
+        }
 
         // Print winner
         if (winner == Team.WHITE) {
