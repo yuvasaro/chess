@@ -84,7 +84,7 @@ public abstract class Piece {
      * Returns the piece's number of moves
      * @return the number of times this piece has moved
      */
-    public int getNumMoves() {
+    public int moveCount() {
         return numMoves;
     }
 

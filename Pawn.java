@@ -82,6 +82,34 @@ public class Pawn extends Piece {
             possibleMoves.add(rightDiagonal);
         }
 
+        // EN PASSANT bruh
+        Team team = getTeam();
+        // 5th rank as white or 4th rank as black
+        if (team == Team.WHITE && coords.y == 4 || 
+                team == Team.BLACK && coords.y == 3) {
+            // Get pieces to the left and right
+            Point left = new Point(coords.x - 1, coords.y);
+            Piece leftPiece = board.getPiece(left);
+            Point right = new Point(coords.x + 1, coords.y);
+            Piece rightPiece = board.getPiece(right);
+
+            // Check if left and right pieces are enemy pawns
+            if (leftPiece instanceof Pawn) {
+                if (leftPiece.getTeam() != this.getTeam()) {
+                    if (leftPiece.moveCount() == 1) { // First move, 2 squares
+                        possibleMoves.add(leftDiagonal);
+                    }
+                }
+            }
+            if (rightPiece instanceof Pawn) {
+                if (rightPiece.getTeam() != this.getTeam()) {
+                    if (rightPiece.moveCount() == 1) { // First move, 2 squares
+                        possibleMoves.add(rightDiagonal);
+                    }
+                }
+            }
+        }
+
         return possibleMoves;
     }
 }

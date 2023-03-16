@@ -385,11 +385,38 @@ public class Game {
 
         // Move the piece and remove any captured pieces
         Piece captured = board.movePiece(pieceToMove, destination);
+        
+        // EN PASSANT bruh
+        boolean enPassant = false;
+        Point enPassantVictimCoords = null;
+        if (pieceToMove instanceof Pawn) {
+            if (captured == null) {
+                // Captured pawn
+                if (destination.x == pieceCoords.x + 1) {
+                    enPassantVictimCoords = new Point(
+                        pieceCoords.x + 1, pieceCoords.y);
+                    captured = board.getPiece(enPassantVictimCoords);
+                    enPassant = true;
+                } else if (destination.x == pieceCoords.x - 1) {
+                    enPassantVictimCoords = new Point(
+                        pieceCoords.x - 1, pieceCoords.y);
+                    captured = board.getPiece(enPassantVictimCoords);
+                    enPassant = true;
+                }
+            }
+        }
+
+        if (enPassant) {
+            board.setPiece(null, enPassantVictimCoords);
+        }
         capture(captured, oppositeTeamPieces, false);
 
         // Make sure moving the piece doesn't cause the king to be in check
         if (isInCheck(board)) {
             board.undoMovePiece(pieceToMove, pieceCoords, captured);
+            if (enPassant) {
+                board.setPiece(captured, enPassantVictimCoords);
+            }
             capture(captured, oppositeTeamPieces, true); // Undo capture
             return false;
         }
@@ -495,6 +522,32 @@ public class Game {
             for (Point destination : piece.getMoves()) {
                 // Move piece
                 Piece captured = duplicateBoard.movePiece(piece, destination);
+                
+                // EN PASSANT bruh
+                boolean enPassant = false;
+                Point enPassantVictimCoords = null;
+                if (piece instanceof Pawn) {
+                    if (captured == null) {
+                        // Captured pawn
+                        if (destination.x == initialCoords.x + 1) {
+                            enPassantVictimCoords = new Point(
+                                initialCoords.x + 1, initialCoords.y);
+                            captured = duplicateBoard.getPiece(
+                                enPassantVictimCoords);
+                            enPassant = true;
+                        } else if (destination.x == initialCoords.x - 1) {
+                            enPassantVictimCoords = new Point(
+                                initialCoords.x - 1, initialCoords.y);
+                            captured = duplicateBoard.getPiece(
+                                enPassantVictimCoords);
+                            enPassant = true;
+                        }
+                    }
+                }
+
+                if (enPassant) {
+                    duplicateBoard.setPiece(null, enPassantVictimCoords);
+                }
                 capture(captured, oppositeTeamPieces, false);
 
                 // Check if in check
@@ -505,6 +558,9 @@ public class Game {
 
                 // Move piece back
                 duplicateBoard.undoMovePiece(piece, initialCoords, captured);
+                if (enPassant) {
+                    duplicateBoard.setPiece(captured, enPassantVictimCoords);
+                }
                 capture(captured, oppositeTeamPieces, true);
             }
 
