@@ -1,3 +1,5 @@
+package game;
+
 import java.awt.Point;
 import java.util.regex.*;
 import java.util.stream.Collectors;

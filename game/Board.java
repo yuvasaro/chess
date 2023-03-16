@@ -1,3 +1,5 @@
+package game;
+
 import java.awt.Point;
 import java.util.Map;
 import javax.imageio.ImageIO;
@@ -12,7 +14,7 @@ import java.util.ArrayList;
 public class Board {
     private static final int SIZE = 8;
     private static final String IMAGE = "assets/board.png";
-    private static final String SAVE_IMAGE = "current_board.png";
+    private static final String SAVE_IMAGE = "game/current_board.png";
     
     private Piece[][] board;
     private ArrayList<Piece> whitePieces;

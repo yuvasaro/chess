@@ -1,3 +1,5 @@
+import game.Game;
+
 /**
  * Main class
  */
