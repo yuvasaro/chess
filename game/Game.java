@@ -330,7 +330,8 @@ public class Game {
 
         try {
             // Get promote piece class and constructor
-            Class<?> promotePieceClass = Class.forName(promotePieceString);
+            Class<?> promotePieceClass = Class.forName(
+                getClass().getPackageName() + "." + promotePieceString);
             Constructor<?> constructor = promotePieceClass.getConstructor(
                 Board.class, Team.class, int.class, int.class);
 
