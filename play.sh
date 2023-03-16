@@ -1,2 +1,2 @@
-javac *.java
-java Main
+javac *.java -d bin
+java -cp bin Main
