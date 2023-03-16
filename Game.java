@@ -10,6 +10,7 @@ import java.util.Map;
 public class Game {
     private boolean whiteToPlay;
     private Board board;
+    private Piece lastMoved = null;
     private Team winner;
     private Map<String, String> letterPieceMapping = Map.of(
         "N", "Knight",
@@ -212,6 +213,7 @@ public class Game {
             return false;
         }
 
+        lastMoved = king;
         return true;
     }
 
@@ -304,6 +306,7 @@ public class Game {
 
         // Setup promoted piece
         board.setUpPiece(promoted);
+        lastMoved = promoted;
         return true;
     }
 
@@ -387,12 +390,9 @@ public class Game {
         Piece captured = board.movePiece(pieceToMove, destination);
         
         // EN PASSANT bruh
-        boolean enPassant = false;
         Point enPassantVictimCoords = checkEnPassant(board, pieceToMove, 
             pieceCoords, captured, destination);
-        if (enPassantVictimCoords != null) {
-            enPassant = true;
-        }
+        boolean enPassant = (enPassantVictimCoords != null);
         if (enPassant) {
             board.setPiece(null, enPassantVictimCoords);
         }
@@ -411,6 +411,7 @@ public class Game {
             return false;
         }
 
+        lastMoved = pieceToMove;
         return true;
     }
 
@@ -474,31 +475,34 @@ public class Game {
     private Point checkEnPassant(Board theBoard, Piece pieceToMove, 
             Point pieceCoords, Piece captured, Point destination) {
         // EN PASSANT bruh
-        boolean enPassant = false;
         Point enPassantVictimCoords = null;
+        Pawn enPassantVictim = null;
 
         if (pieceToMove instanceof Pawn) {
             if (captured == null) {
-                // Captured pawn
+                // Captured pawn coordinates
                 if (destination.x == pieceCoords.x + 1) {
                     enPassantVictimCoords = new Point(
                         pieceCoords.x + 1, pieceCoords.y);
-                    captured = theBoard.getPiece(enPassantVictimCoords);
-                    enPassant = true;
                 } else if (destination.x == pieceCoords.x - 1) {
                     enPassantVictimCoords = new Point(
                         pieceCoords.x - 1, pieceCoords.y);
-                    captured = theBoard.getPiece(enPassantVictimCoords);
-                    enPassant = true;
+                }
+
+                // If enPassantVictimCoords is set, check if the victim was the 
+                // last moved piece
+                if (enPassantVictimCoords != null) {
+                    enPassantVictim = (Pawn) theBoard.getPiece(
+                        enPassantVictimCoords);
+                    if (lastMoved == enPassantVictim) {
+                        captured = theBoard.getPiece(enPassantVictimCoords);
+                    }
                 }
             }
         }
 
-        // Return coords if en passant, else null
-        if (enPassant) {
-            return enPassantVictimCoords;
-        }
-        return null;
+        // Return victim coords if it is set, else null
+        return enPassantVictimCoords;
     }
 
     /**
@@ -553,12 +557,9 @@ public class Game {
                 Piece captured = duplicateBoard.movePiece(piece, destination);
                 
                 // EN PASSANT bruh
-                boolean enPassant = false;
-                Point enPassantVictimCoords = checkEnPassant(board, piece, 
-                    initialCoords, captured, destination);
-                if (enPassantVictimCoords != null) {
-                    enPassant = true;
-                }
+                Point enPassantVictimCoords = checkEnPassant(duplicateBoard, 
+                    piece, initialCoords, captured, destination);
+                boolean enPassant = (enPassantVictimCoords != null);
                 if (enPassant) {
                     duplicateBoard.setPiece(null, enPassantVictimCoords);
                 }
