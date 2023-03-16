@@ -112,4 +112,12 @@ public class Pawn extends Piece {
 
         return possibleMoves;
     }
+
+    /**
+     * Gets the pawn's specifier letter (ex. "e")
+     * @return the pawn specifier
+     */
+    public String getPawnSpecifier() {
+        return MoveHandler.toSquare(getCoords()).substring(0, 1);
+    }
 }
