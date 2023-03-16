@@ -45,7 +45,6 @@ public class Game {
             String whoPlays = whiteToPlay ? "White" : "Black";
             boolean validMove = false;
             String input = null;
-            String[] moveComponents = null;
 
             System.out.println();
             System.out.println(board);
