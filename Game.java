@@ -590,8 +590,8 @@ public class Game {
                     if (enPassant) {
                         duplicateBoard.setPiece(null, enPassantVictimCoords);
                     } 
-                    // Otherwise if the destination is on a different column and the 
-                    // move is not a capture, it's an illegal move
+                    // Otherwise if the destination is on a different column 
+                    // and the move is not a capture, it's an illegal move
                     else if (willBeCaptured == null && 
                             destination.x != initialCoords.x) {
                         continue;
