@@ -85,7 +85,7 @@ public class Board {
                 }
 
                 // Create a copy of the other piece
-                Piece duplicatePiece = otherPiece.copyInstance(otherBoard);
+                Piece duplicatePiece = otherPiece.copyInstance(this);
                 setUpPiece(duplicatePiece);
             }
         }

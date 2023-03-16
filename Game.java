@@ -38,7 +38,7 @@ public class Game {
      */
     public void start() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Start game.\n");
+        System.out.println("Start game.");
 
         // Game loop
         do {
@@ -49,7 +49,6 @@ public class Game {
 
             System.out.println();
             System.out.println(board);
-            System.out.println();
 
             do {
                 // Take input
@@ -444,30 +443,46 @@ public class Game {
     private boolean gameEnd() {
         // Duplicate the board and get its pieces
         Board duplicateBoard = new Board(board);
-        ArrayList<Piece> pieces;
-        if (whiteToPlay) {
-            pieces = duplicateBoard.getWhitePieces();
-        } else {
-            pieces = duplicateBoard.getBlackPieces();
-        }
+        ArrayList<Piece> whitePieces = duplicateBoard.getWhitePieces();
+        ArrayList<Piece> blackPieces = duplicateBoard.getBlackPieces();
 
+        // Set team pieces and opposite team pieces based on whose turn it is
+        ArrayList<Piece> teamPieces;
+        ArrayList<Piece> oppositeTeamPieces;
+        if (whiteToPlay) {
+            teamPieces = whitePieces;
+            oppositeTeamPieces = blackPieces;
+        } else {
+            teamPieces = blackPieces;
+            oppositeTeamPieces = whitePieces;
+        }
         // Check whether the team is in check and if they have no moves
-        boolean inCheck = isInCheck(board);
+        boolean inCheck = isInCheck(duplicateBoard);
         boolean hasNoMoves = true;
 
         // Check every possible move
-        for (Piece piece : pieces) {
+        for (Piece piece : teamPieces) {
             Point initialCoords = piece.getCoords();
             
             for (Point destination : piece.getMoves()) {
-                // Move piece, check if in check, move piece back
+                // Move piece
                 Piece captured = duplicateBoard.movePiece(piece, destination);
-                if (!isInCheck(duplicateBoard)) {
+                if (captured != null) {
+                    oppositeTeamPieces.remove(captured);
+                }
+
+                // Check if in check
+                if (!(captured instanceof King || isInCheck(duplicateBoard))) {
                     hasNoMoves = false;
                     break;
                 }
+
+                // Move piece back
                 duplicateBoard.movePiece(piece, initialCoords);
                 duplicateBoard.setPiece(captured, destination);
+                if (captured != null) {
+                    oppositeTeamPieces.add(captured);
+                }
             }
 
             // If found a possible move, break
