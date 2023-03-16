@@ -362,6 +362,12 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
+# Mac
+.DS_Store
+
+# bin folder
+bin/
+
 # Java .class files
 *.class
 
