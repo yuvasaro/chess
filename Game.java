@@ -326,6 +326,15 @@ public class Game {
         }
         Piece pieceToMove = null;
         Point pieceCoords = null;
+
+        if (pieceString == "P") {
+            // Pawn at 8th rank as white or 1st rank as black without promotion 
+            // is illegal
+            if ((whiteToPlay && destination.y == 7) || 
+                    (!whiteToPlay && destination.y == 0)) {
+                return false;
+            }
+        }
         
         // Get all pieces that could be the one to move
         ArrayList<Piece> candidates = new ArrayList<>();
