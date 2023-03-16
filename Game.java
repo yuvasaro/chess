@@ -124,11 +124,11 @@ public class Game {
         }
         // Promotion
         else if (notNull[MoveHandler.PROMOTION]) {
-            return promotion(moveComponents, notNull, pieces);
+            return promotion(moveComponents, notNull);
         }
         // All other moves
         else {
-            return regularMove(moveComponents, pieces);
+            return regularMove(moveComponents);
         }
     }
 
@@ -208,8 +208,8 @@ public class Game {
         
         // Move the pieces back if the king moves into check, return false
         if (isInCheck(board)) {
-            board.movePiece(king, kingCoords);
-            board.movePiece(rook, rookCoords);
+            board.undoMovePiece(king, kingCoords, null);
+            board.undoMovePiece(rook, rookCoords, null);
             return false;
         }
 
@@ -221,11 +221,12 @@ public class Game {
      * @param moveComponents a string array of the move's components
      * @param notNull a boolean array representing the null/not null move 
      *                components
-     * @param pieces an ArrayList of pieces for the current team
      * @return whether the promotion was successful
      */
-    private boolean promotion(String[] moveComponents, boolean[] notNull,
-            ArrayList<Piece> pieces) {
+    private boolean promotion(String[] moveComponents, boolean[] notNull) {
+        ArrayList<Piece> teamPieces = getPieces(board, "team");
+        ArrayList<Piece> oppositeTeamPieces = getPieces(board, "oppositeTeam");
+
         String square = moveComponents[MoveHandler.SQUARE];
         String promotion = moveComponents[MoveHandler.PROMOTION];
 
@@ -247,7 +248,7 @@ public class Game {
         }
 
         // Find pawn
-        for (Piece piece : pieces) {
+        for (Piece piece : teamPieces) {
             if (piece instanceof Pawn) {
                 pawnCoords = ((Pawn) piece).getCoords();
                 pawnSquare = MoveHandler.toSquare(pawnCoords);
@@ -289,25 +290,17 @@ public class Game {
 
         // Get captured piece and remove from opposite team pieces
         Piece captured = board.movePiece(pawn, destination);
+        capture(captured, oppositeTeamPieces, false);
 
         // Make sure moving the pawn doesn't cause the king to be in check
         if (isInCheck(board)) {
-            board.movePiece(pawn, pawnCoords);
-            board.setPiece(captured, destination);
+            board.undoMovePiece(pawn, pawnCoords, captured);
+            capture(captured, oppositeTeamPieces, true);
             return false;
         }
 
-        // Remove captured piece from opposite team pieces
-        if (captured != null) {
-            if (whiteToPlay) {
-                board.getBlackPieces().remove(captured);
-            } else {
-                board.getWhitePieces().remove(captured);
-            }
-        }
-
         // Remove pawn from team pieces and board
-        pieces.remove(pawn);
+        teamPieces.remove(pawn);
         board.setPiece(null, destination);
 
         // Setup promoted piece
@@ -318,11 +311,13 @@ public class Game {
     /**
      * Executes a regular piece move
      * @param moveComponents an array of the move's components
-     * @param pieces an ArrayList of pieces for the current team
      * @return whether the move was successful
      */
-    private boolean regularMove(String[] moveComponents, 
-            ArrayList<Piece> pieces) {
+    private boolean regularMove(String[] moveComponents) {
+        ArrayList<Piece> teamPieces = getPieces(board, "team");
+        ArrayList<Piece> oppositeTeamPieces = getPieces(board, "oppositeTeam");
+
+        // Get move information
         Point destination = MoveHandler.toCoords(
                 moveComponents[MoveHandler.SQUARE]);
         String pieceString = moveComponents[MoveHandler.PIECE];
@@ -335,7 +330,7 @@ public class Game {
         
         // Get all pieces that could be the one to move
         ArrayList<Piece> candidates = new ArrayList<>();
-        for (Piece piece : pieces) {
+        for (Piece piece : teamPieces) {
             if (piece.toString().toUpperCase().equals(pieceString)) {
                 candidates.add(piece);
             }
@@ -360,6 +355,10 @@ public class Game {
         } 
         // Otherwise use specifier to select piece
         else {
+            if (specifier == null) {
+                return false;
+            }
+
             for (Piece piece : candidates) {
                 String currentSquare = MoveHandler.toSquare(
                     piece.getCoords());
@@ -378,34 +377,27 @@ public class Game {
 
         // Move the piece and remove any captured pieces
         Piece captured = board.movePiece(pieceToMove, destination);
+        capture(captured, oppositeTeamPieces, false);
 
         // Make sure moving the piece doesn't cause the king to be in check
         if (isInCheck(board)) {
-            board.movePiece(pieceToMove, pieceCoords);
-            board.setPiece(captured, destination);
+            board.undoMovePiece(pieceToMove, pieceCoords, captured);
+            capture(captured, oppositeTeamPieces, true); // Undo capture
             return false;
-        }
-
-        // Remove captured piece from opposite team pieces
-        if (captured != null) {
-            if (whiteToPlay) {
-                board.getBlackPieces().remove(captured);
-            } else {
-                board.getWhitePieces().remove(captured);
-            }
         }
 
         return true;
     }
 
     /**
-     * Returns whether the current player is in check
-     * @return whether the current player is in check
+     * Gets the pieces for the team of the current turn or the opposite team
+     * @param theBoard the board to get the pieces from
+     * @param whichTeam current team or opposite team
+     * @return the pieces of the team signified in whichTeam
      */
-    private boolean isInCheck(Board theBoard) {
+    private ArrayList<Piece> getPieces(Board theBoard, String whichTeam) {
         ArrayList<Piece> whitePieces = theBoard.getWhitePieces();
         ArrayList<Piece> blackPieces = theBoard.getBlackPieces();
-        Point kingCoords = null;
 
         // Set team pieces and opposite team pieces based on whose turn it is
         ArrayList<Piece> teamPieces;
@@ -417,6 +409,43 @@ public class Game {
             teamPieces = blackPieces;
             oppositeTeamPieces = whitePieces;
         }
+
+        // Return pieces based on team string
+        if (whichTeam.equals("team")) {
+            return teamPieces;
+        } else if (whichTeam.equals("oppositeTeam")) {
+            return oppositeTeamPieces;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Removes or undo removes a piece from a team's pieces
+     * @param piece the piece to remove or add back
+     * @param pieces the ArrayList of the team's pieces
+     * @param undo whether to undo the capture
+     */
+    private void capture(Piece piece, ArrayList<Piece> pieces, 
+            boolean undo) {
+        if (piece != null) {
+            if (undo) { // Add piece back
+                pieces.add(piece);
+            } else { // Remove piece
+                pieces.remove(piece);
+            }
+        }
+    }
+
+    /**
+     * Returns whether the current player is in check
+     * @return whether the current player is in check
+     */
+    private boolean isInCheck(Board theBoard) {
+        ArrayList<Piece> teamPieces = getPieces(theBoard, "team");
+        ArrayList<Piece> oppositeTeamPieces = getPieces(
+            theBoard, "oppositeTeam");
+        Point kingCoords = null;
 
         // Get team king coords
         for (Piece piece : teamPieces) {
@@ -443,19 +472,10 @@ public class Game {
     private boolean gameEnd() {
         // Duplicate the board and get its pieces
         Board duplicateBoard = new Board(board);
-        ArrayList<Piece> whitePieces = duplicateBoard.getWhitePieces();
-        ArrayList<Piece> blackPieces = duplicateBoard.getBlackPieces();
-
-        // Set team pieces and opposite team pieces based on whose turn it is
-        ArrayList<Piece> teamPieces;
-        ArrayList<Piece> oppositeTeamPieces;
-        if (whiteToPlay) {
-            teamPieces = whitePieces;
-            oppositeTeamPieces = blackPieces;
-        } else {
-            teamPieces = blackPieces;
-            oppositeTeamPieces = whitePieces;
-        }
+        ArrayList<Piece> teamPieces = getPieces(duplicateBoard, "team");
+        ArrayList<Piece> oppositeTeamPieces = getPieces(
+            duplicateBoard, "oppositeTeam");
+        
         // Check whether the team is in check and if they have no moves
         boolean inCheck = isInCheck(duplicateBoard);
         boolean hasNoMoves = true;
@@ -467,9 +487,7 @@ public class Game {
             for (Point destination : piece.getMoves()) {
                 // Move piece
                 Piece captured = duplicateBoard.movePiece(piece, destination);
-                if (captured != null) {
-                    oppositeTeamPieces.remove(captured);
-                }
+                capture(captured, oppositeTeamPieces, false);
 
                 // Check if in check
                 if (!(captured instanceof King || isInCheck(duplicateBoard))) {
@@ -478,11 +496,8 @@ public class Game {
                 }
 
                 // Move piece back
-                duplicateBoard.movePiece(piece, initialCoords);
-                duplicateBoard.setPiece(captured, destination);
-                if (captured != null) {
-                    oppositeTeamPieces.add(captured);
-                }
+                duplicateBoard.undoMovePiece(piece, initialCoords, captured);
+                capture(captured, oppositeTeamPieces, true);
             }
 
             // If found a possible move, break

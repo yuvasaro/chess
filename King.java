@@ -89,23 +89,4 @@ public class King extends Piece {
 
         return possibleMoves;
     }
-
-    /**
-     * Returns whether the king has moved
-     * @return whether the king has moved
-     */
-    public boolean hasMoved() {
-        return hasMoved;
-    }
-
-    /**
-     * Moves the king to its new square and sets hasMoved to true
-     * @param newCoords the new coordinates to move to
-     */
-    public void move(Point newCoords) {
-        super.move(newCoords);
-        if (!hasMoved) {
-            hasMoved = true;
-        }
-    }
 }

@@ -200,7 +200,7 @@ public class Board {
      * Moves a piece by changing the piece's location on the board
      * @param piece the piece to move
      * @param newCoords the new position to move the piece to
-     * @return whether the move was successful
+     * @return the piece that was captured during the move
      */
     public Piece movePiece(Piece piece, Point newCoords) {
         Point currentCoords = piece.getCoords();
@@ -211,6 +211,21 @@ public class Board {
         setPiece(null, currentCoords);
         piece.move(newCoords); // Changes coords of Piece object
         return otherPiece;
+    }
+
+    /**
+     * Undoes a piece move
+     * @param piece the piece to move back
+     * @param oldCoords the old position to move the piece to
+     * @param captured the piece that was captured due to the move
+     */
+    public void undoMovePiece(Piece piece, Point oldCoords, Piece captured) {
+        Point currentCoords = piece.getCoords();
+
+        // Move piece back and reset captured piece
+        setPiece(piece, oldCoords);
+        setPiece(captured, currentCoords);
+        piece.undoMove(oldCoords); // Changes coords of Piece object
     }
 
     /**

@@ -90,23 +90,4 @@ public class Rook extends Piece {
 
         return possibleMoves;
     }
-
-    /**
-     * Returns whether the rook has moved
-     * @return whether the rook has moved
-     */
-    public boolean hasMoved() {
-        return hasMoved;
-    }
-
-    /**
-     * Moves the rook to its new square and sets hasMoved to true
-     * @param newCoords the new coordinates to move to
-     */
-    public void move(Point newCoords) {
-        super.move(newCoords);
-        if (!hasMoved) {
-            hasMoved = true;
-        }
-    }
 }

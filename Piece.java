@@ -11,6 +11,8 @@ public abstract class Piece {
     private final Team team;
     private Point coords;
     private String image;
+    private boolean hasMoved;
+    private int numMoves;
 
     /**
      * Piece constructor
@@ -27,6 +29,7 @@ public abstract class Piece {
         this.coords = new Point(row, col);
         this.image = (team == Team.WHITE) ? 
             String.format(image, "white") : String.format(image, "black");
+        this.hasMoved = false;
     }
 
     /**
@@ -70,11 +73,51 @@ public abstract class Piece {
     }
 
     /**
+     * Returns whether the piece has moved
+     * @return whether the piece has moved
+     */
+    public boolean hasMoved() {
+        return hasMoved;
+    }
+
+    /**
+     * Returns the piece's number of moves
+     * @return the number of times this piece has moved
+     */
+    public int getNumMoves() {
+        return numMoves;
+    }
+
+    /**
+     * Sets the moved state
+     * @param moved the new moved state
+     */
+    public void setMoved(boolean moved) {
+        hasMoved = moved;
+    }
+
+    /**
      * Moves the piece to a new square on the board
      * @param newCoords the new coordinates to move to
      */
     public void move(Point newCoords) {
         coords = newCoords;
+        numMoves++;
+        if (!hasMoved) {
+            setMoved(true);
+        }
+    }
+
+    /**
+     * Undoes the piece's move
+     * @param oldCoords the old coordinates of the piece
+     */
+    public void undoMove(Point oldCoords) {
+        coords = oldCoords;
+        numMoves--;
+        if (numMoves == 0) {
+            setMoved(false);
+        }
     }
 
     /**
