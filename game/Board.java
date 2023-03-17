@@ -13,9 +13,13 @@ import java.util.ArrayList;
  */
 public class Board {
     private static final int SIZE = 8;
+
+    // Image locations
     private static final String IMAGE = "assets/board.png";
+    private static final String HIGHLIGHT = "assets/highlight.png";
     private static final String SAVE_IMAGE = "game/current_board.png";
     
+    // Board and pieces
     private Piece[][] board;
     private ArrayList<Piece> whitePieces;
     private ArrayList<Piece> blackPieces;
@@ -267,11 +271,41 @@ public class Board {
         return pixelArray;
     }
 
+    private void drawItemOnBoard(int[][] boardPixelArray, String imagePath, 
+            Point drawCoords, int transparentRGB) throws IOException {
+        // Open item image and get pixel array
+        BufferedImage itemImage = ImageIO.read(new File(imagePath));
+        int[][] itemPixelArray = open(itemImage);
+        int itemSize = itemPixelArray.length;
+        
+        // Calculate start and end coords of item image on board image
+        int startRow = drawCoords.x * itemSize;
+        int startCol = (SIZE - 1 - drawCoords.y) * itemSize;
+        int endRow = startRow + itemSize;
+        int endCol = startCol + itemSize;
+
+        // Draw the item on the board using the pixel arrays
+        for (int i = startRow; i < endRow; i++) {
+            for (int j = startCol; j < endCol; j++) {
+                int patchRow = i - startRow;
+                int patchCol = j - startCol;
+
+                // Draw the part of the image that's not transparent
+                if (itemPixelArray[patchRow][patchCol] != 
+                        transparentRGB) {
+                    boardPixelArray[i][j] = 
+                        itemPixelArray[patchRow][patchCol];
+                }
+            }
+        }
+    }
+
     /**
      * Saves the current board position as a PNG image
      * @throws IOException if an image file is not found
      */
-    public void saveAsImage(boolean whiteToPlay) throws IOException {
+    public void saveAsImage(boolean whiteToPlay, Point lastMovedInitialCoords, 
+            Piece lastMoved) throws IOException {
         Piece[][] theBoard = whiteToPlay ? getBoard() : flipBoard();
 
         // RGB byte shifts
@@ -290,66 +324,46 @@ public class Board {
         // Loop through all pieces on the board and add draw them
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
+                Point pointOnBoard = new Point(i, j);
                 Piece piece = theBoard[i][j];
                 if (piece == null) { // No piece on square
                     continue;
                 }
 
-                // Open piece image and get pixel array
+                // Open piece image
                 String imagePath = piece.getImagePath();
-                BufferedImage pieceImage = ImageIO.read(new File(imagePath));
-                int[][] piecePixelArray = open(pieceImage);
-                int pieceSize = piecePixelArray.length;
-                
-                // Calculate start and end coords of piece image on board image
-                int startRow = i * pieceSize;
-                int startCol = (SIZE - 1 - j) * pieceSize;
-                int endRow = startRow + pieceSize;
-                int endCol = startCol + pieceSize;
 
-                // Draw the piece on the board using the pixel arrays
-                for (int ii = startRow; ii < endRow; ii++) {
-                    for (int jj = startCol; jj < endCol; jj++) {
-                        int patchRow = ii - startRow;
-                        int patchCol = jj - startCol;
-
-                        // Draw the part of the image that's not transparent
-                        if (piecePixelArray[patchRow][patchCol] != 
-                                transparentRGB) {
-                            boardPixelArray[ii][jj] = 
-                            piecePixelArray[patchRow][patchCol];
-                        }
-                    }
+                // Draw highlights on initial coords and destination of last 
+                // moved piece
+                if (piece == lastMoved) {
+                    drawItemOnBoard(
+                        boardPixelArray, 
+                        HIGHLIGHT, 
+                        whiteToPlay ? lastMovedInitialCoords : 
+                            new Point(SIZE - 1 - lastMovedInitialCoords.x, 
+                                SIZE - 1 - lastMovedInitialCoords.y), 
+                        transparentRGB);
+                    drawItemOnBoard(boardPixelArray, HIGHLIGHT, pointOnBoard, 
+                        transparentRGB);
                 }
+
+                // Draw piece
+                drawItemOnBoard(boardPixelArray, imagePath, 
+                    pointOnBoard, transparentRGB);
             }
         }
-        
-        // Set the RGB values of the board image using the pixel array
-        for (int i = 0; i < boardImage.getWidth(); i++) {
-            for (int j = 0; j < boardImage.getHeight(); j++) {
-                // Turn pixel value into packed RGB int
-                int pixel = boardPixelArray[i][j] << redByteShift | 
-                    boardPixelArray[i][j] << greenByteShift | 
-                    boardPixelArray[i][j] << blueByteShift;
-                boardImage.setRGB(i, j, pixel);
+
+        // Put image back together
+        BufferedImage updatedBoard = new BufferedImage(boardPixelArray.length, 
+            boardPixelArray.length, BufferedImage.TYPE_INT_RGB);
+        for (int i = 0; i < updatedBoard.getHeight(); i++) {
+            for (int j = 0; j < updatedBoard.getWidth(); j++) {
+                updatedBoard.setRGB(i, j, boardPixelArray[i][j]);
             }
         }
 
         // Save to output file
         File outputFile = new File(SAVE_IMAGE);
-        ImageIO.write(boardImage, "png", outputFile);
-    }
-
-    /**
-     * Main method for testing
-     * @param args
-     * @throws IOException
-     */
-    public static void main(String[] args) throws IOException {
-        Board board = new Board();
-        Piece pawn = board.getPiece(new Point(4, 1));
-        board.movePiece(pawn, new Point(4, 3));
-        System.out.println(pawn.getCoords());
-        board.saveAsImage(true);
+        ImageIO.write(updatedBoard, "png", outputFile);
     }
 }

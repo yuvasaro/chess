@@ -13,6 +13,7 @@ public class Game {
     private boolean whiteToPlay;
     private Board board;
     private Piece lastMoved = null;
+    private Point lastMovedInitialCoords = null;
     private Team winner;
     private Map<String, String> letterPieceMapping = Map.of(
         "N", "Knight",
@@ -30,7 +31,7 @@ public class Game {
         board = new Board();
         winner = null;
         try {
-            board.saveAsImage(whiteToPlay);
+            board.saveAsImage(whiteToPlay, null, null);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -114,7 +115,8 @@ public class Game {
 
             // Save board image
             try {
-                board.saveAsImage(whiteToPlay);
+                board.saveAsImage(whiteToPlay, lastMovedInitialCoords, 
+                    lastMoved);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -271,6 +273,7 @@ public class Game {
         }
 
         lastMoved = king;
+        lastMovedInitialCoords = kingCoords;
         return true;
     }
 
@@ -365,6 +368,8 @@ public class Game {
         // Setup promoted piece
         board.setUpPiece(promoted);
         lastMoved = promoted;
+        lastMovedInitialCoords = pawnCoords;
+
         return true;
     }
 
@@ -492,6 +497,7 @@ public class Game {
         }
 
         lastMoved = pieceToMove;
+        lastMovedInitialCoords = pieceCoords;
         return true;
     }
 
