@@ -16,7 +16,10 @@ public class Board {
 
     // Image locations
     private static final String IMAGE = "assets/board.png";
-    private static final String HIGHLIGHT = "assets/highlight.png";
+    private static final String HIGHLIGHT_INITIAL = 
+        "assets/highlight_initial.png";
+    private static final String HIGHLIGHT_DESTINATION = 
+        "assets/highlight_destination.png";
     private static final String SAVE_IMAGE = "game/current_board.png";
     
     // Board and pieces
@@ -338,13 +341,13 @@ public class Board {
                 if (piece == lastMoved) {
                     drawItemOnBoard(
                         boardPixelArray, 
-                        HIGHLIGHT, 
+                        HIGHLIGHT_INITIAL, 
                         whiteToPlay ? lastMovedInitialCoords : 
                             new Point(SIZE - 1 - lastMovedInitialCoords.x, 
                                 SIZE - 1 - lastMovedInitialCoords.y), 
                         transparentRGB);
-                    drawItemOnBoard(boardPixelArray, HIGHLIGHT, pointOnBoard, 
-                        transparentRGB);
+                    drawItemOnBoard(boardPixelArray, HIGHLIGHT_DESTINATION, 
+                        pointOnBoard, transparentRGB);
                 }
 
                 // Draw piece
