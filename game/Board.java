@@ -1,7 +1,6 @@
 package game;
 
 import java.awt.Point;
-import java.util.Map;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -25,16 +24,6 @@ public class Board {
     private Piece[][] board;
     private ArrayList<Piece> whitePieces;
     private ArrayList<Piece> blackPieces;
-
-    // Piece values
-    private Map<String, Integer> pieceValues = Map.of(
-        "p", 1,
-        "n", 3,
-        "b", 3,
-        "r", 5,
-        "q", 9,
-        "k", 0
-    );
 
     /**
      * Board constructor
@@ -207,15 +196,6 @@ public class Board {
             return;
         }
         board[coords.x][coords.y] = piece;
-    }
-
-    /**
-     * Gets the value (in points) of a piece
-     * @param piece the piece
-     * @return the value of the piece
-     */
-    public int getPieceValue(Piece piece) {
-        return pieceValues.get(piece.toString().toLowerCase());
     }
 
     /**
