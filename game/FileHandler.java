@@ -3,16 +3,38 @@ package game;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.awt.Point;
 
 public class FileHandler {
-     // Image locations
-     private static final String IMAGE = "assets/board.png";
-     private static final String HIGHLIGHT_INITIAL = 
+    // Locations and formats
+    private static final String IMAGE = "assets/board.png";
+    private static final String HIGHLIGHT_INITIAL = 
          "assets/highlight_initial.png";
-     private static final String HIGHLIGHT_DESTINATION = 
+    private static final String HIGHLIGHT_DESTINATION = 
          "assets/highlight_destination.png";
+    private static final String PGN_FORMAT = 
+        "[Event \"1v1 me in Chess rn\"]\n" +
+        "[Date \"%d.%d.%d\"]\n" +
+        "[White \"%4$s\"]\n" +
+        "[Black \"%5$s\"]\n" +
+        "[Result \"%6$s\"]\n" +
+        "[WhiteTitle \"GM\"]\n" +
+        "[BlackTitle \"GM\"]\n\n";
+    private static final String DIRECTORY = "bin/%1$s_vs_%2$s";
+    private static final String PGN_FILE = DIRECTORY + "/%1$s_vs_%2$s.pgn";
+    private static final String SAVE_IMAGE_FILE = DIRECTORY + "/board.png";
+
+    /**
+     * Creates a directory for a game between two players
+     * @param whiteName the white player's name
+     * @param blackName the black player's name
+     */
+    public static void makeDirectory(String whiteName, String blackName) {
+        new File(String.format(DIRECTORY, whiteName, blackName)).mkdirs();
+    }
 
     /**
      * Opens an image and returns its pixel array
@@ -78,17 +100,16 @@ public class FileHandler {
 
     /**
      * Saves the current board position as a PNG image
-     * @param Board the chessboard
+     * @param board the chessboard
      * @param whiteToPlay whether it is white's turn
      * @param lastMovedInitialCoords the initial coordinates of the last moved 
      *                               piece
      * @param lastMoved the last moved piece
-     * @param saveImagePath the path to save the image
      * @throws IOException if an image file is not found
      */
     public static void saveAsImage(Board board, boolean whiteToPlay, 
-            Point lastMovedInitialCoords, Piece lastMoved, 
-            String saveImagePath) throws IOException {
+            Point lastMovedInitialCoords, Piece lastMoved, String whiteName, 
+            String blackName) throws IOException {
         Piece[][] theBoard = whiteToPlay ? board.getBoard() : board.flipBoard();
 
         // RGB byte shifts
@@ -147,7 +168,41 @@ public class FileHandler {
         }
 
         // Save to output file
-        File outputFile = new File(saveImagePath);
+        File outputFile = new File(String.format(SAVE_IMAGE_FILE, 
+            whiteName, blackName));
         ImageIO.write(updatedBoard, "png", outputFile);
+    }
+
+    /**
+     * Saves the game to a PGN file
+     * @param date the date of the game
+     * @param whiteName white's name
+     * @param blackName black's name
+     * @param result the result of the game
+     * @param pgn the PGN string of the game
+     */
+    public static void savePGN(LocalDate date, String whiteName, 
+            String blackName, String result, String pgn) {
+        try {
+            // Get today's date
+            int year = date.getYear();
+            int month = date.getMonthValue();
+            int day = date.getDayOfMonth();
+
+            // Organize PGN data
+            String gamePGN = String.format(PGN_FORMAT, year, month, day, 
+                whiteName, blackName, result) + pgn;
+
+            // Write to PGN file
+            File pgnFile = new File(String.format(
+                PGN_FILE, whiteName, blackName));
+            pgnFile.getParentFile().mkdirs();
+            FileWriter myWriter = new FileWriter(String.format(
+                PGN_FILE, whiteName, blackName));
+            myWriter.write(gamePGN);
+            myWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
