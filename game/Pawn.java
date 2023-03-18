@@ -8,7 +8,7 @@ import java.awt.Point;
  */
 public class Pawn extends Piece {
     // String representation
-    private static final String LETTER = "p";
+    private static final String LETTER = "P";
 
     // Path to piece image
     private static final String IMAGE = "assets/pawn_%s.png";

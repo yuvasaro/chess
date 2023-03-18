@@ -8,7 +8,7 @@ import java.awt.Point;
  */
 public class Queen extends Piece {
     // String representation
-    private static final String LETTER = "q";
+    private static final String LETTER = "Q";
 
     // Path to piece image
     private static final String IMAGE = "assets/queen_%s.png";

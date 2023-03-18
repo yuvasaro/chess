@@ -9,7 +9,7 @@ import java.awt.Point;
  */
 public class Knight extends Piece {
     // String representation
-    private static final String LETTER = "n";
+    private static final String LETTER = "N";
 
     // Path to piece image
     private static final String IMAGE = "assets/knight_%s.png";

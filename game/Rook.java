@@ -8,7 +8,7 @@ import java.awt.Point;
  */
 public class Rook extends Piece {
     // String representation
-    private static final String LETTER = "r";
+    private static final String LETTER = "R";
 
     // Path to piece image
     private static final String IMAGE = "assets/rook_%s.png";

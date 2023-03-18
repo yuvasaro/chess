@@ -8,7 +8,7 @@ import java.awt.Point;
  */
 public class Bishop extends Piece {
     // String representation
-    private static final String LETTER = "b";
+    private static final String LETTER = "B";
 
     // Path to piece image
     private static final String IMAGE = "assets/bishop_%s.png";

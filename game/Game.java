@@ -88,9 +88,6 @@ public class Game {
             boolean validMove = false;
             String input = null;
 
-            System.out.println();
-            System.out.println(board);
-
             do {
                 // Take input
                 System.out.print(String.format("%s to play: ", whoPlays));
