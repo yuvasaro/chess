@@ -3,18 +3,36 @@ package game;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.awt.Point;
+import java.io.FileWriter;
 import java.lang.reflect.Constructor;
+import java.time.LocalDate;
 import java.util.Map;
 
 /**
  * The chess game engine
  */
 public class Game {
+    // PGN format
+    private static final String PGN_FORMAT = 
+        "[Event \"1v1 me in Chess rn\"]\n" +
+        "[Date \"%d.%d.%d\"]\n" +
+        "[White \"%4$s\"]\n" +
+        "[Black \"%5$s\"]\n" +
+        "[Result \"%6$s\"]\n" +
+        "[WhiteTitle \"GM\"]\n" +
+        "[BlackTitle \"GM\"]\n\n";
+    private static final String PGN_FILE = "bin/%s_vs_%s.pgn";
+
+    // Instance variables
+    private LocalDate date;
     private boolean whiteToPlay;
     private Board board;
     private Piece lastMoved = null;
     private Point lastMovedInitialCoords = null;
+    private String whiteName;
+    private String blackName;
     private Team winner;
+    private String result;
     private Map<String, String> letterPieceMapping = Map.of(
         "N", "Knight",
         "B", "Bishop",
@@ -23,13 +41,17 @@ public class Game {
         "K", "King"
     );
 
+    // Game moves counter and PGN string
+    private int moveNumber = 0;
+    private String pgn = "";
+
     /**
      * Creates a new game with white as the first player
      */
     public Game() {
+        date = LocalDate.now();
         whiteToPlay = true;
         board = new Board();
-        winner = null;
         try {
             board.saveAsImage(whiteToPlay, null, null);
         } catch (Exception e) {
@@ -47,7 +69,13 @@ public class Game {
         boolean drawAccepted = false;
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Start game.");
+        System.out.println("Start game.\n");
+
+        // Get player names
+        System.out.print("Who is playing White? ");
+        whiteName = scanner.nextLine();
+        System.out.print("Who is playing Black? ");
+        blackName = scanner.nextLine();
 
         // Game loop
         do {
@@ -110,6 +138,14 @@ public class Game {
                 break;
             }
 
+            // Add move to pgn
+            if (whiteToPlay) {
+                moveNumber++;
+                pgn += String.format("%s. %s ", moveNumber, input);
+            } else {
+                pgn += String.format("%s ", input);
+            }
+
             // Toggle whiteToPlay to change to next player's turn
             whiteToPlay = !whiteToPlay;
 
@@ -139,12 +175,19 @@ public class Game {
 
         // Print winner
         if (winner == Team.WHITE) {
+            result = "1-0";
             System.out.println("White wins!");
         } else if (winner == Team.BLACK) {
+            result = "0-1";
             System.out.println("Black wins!");
         } else {
+            result = "1/2-1/2";
             System.out.println("It's a draw!");
         }
+        pgn += result;
+
+        // Save PGN
+        savePGN(whiteName, blackName);
     }
 
     /**
@@ -704,6 +747,33 @@ public class Game {
         // Stalemate - winner stays null
         else {
             return true;
+        }
+    }
+
+    /**
+     * Saves the game to a PGN file
+     * @param whiteName white's name
+     * @param blackName black's name
+     * @param result the result of the game
+     */
+    public void savePGN(String whiteName, String blackName) {
+        try {
+            // Get today's date
+            int year = date.getYear();
+            int month = date.getMonthValue();
+            int day = date.getDayOfMonth();
+
+            // Organize PGN data
+            String gamePGN = String.format(PGN_FORMAT, year, month, day, 
+                whiteName, blackName, result) + pgn;
+
+            // Write to PGN file
+            FileWriter myWriter = new FileWriter(String.format(
+                PGN_FILE, whiteName, blackName));
+            myWriter.write(gamePGN);
+            myWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

@@ -20,7 +20,7 @@ public class Board {
         "assets/highlight_initial.png";
     private static final String HIGHLIGHT_DESTINATION = 
         "assets/highlight_destination.png";
-    private static final String SAVE_IMAGE = "game/current_board.png";
+    private static final String SAVE_IMAGE = "bin/current_board.png";
     
     // Board and pieces
     private Piece[][] board;
@@ -274,6 +274,14 @@ public class Board {
         return pixelArray;
     }
 
+    /**
+     * Draws an item on the board image
+     * @param boardPixelArray the board's pixel array
+     * @param imagePath the path to the image to be drawn
+     * @param drawCoords the coordinates on the board the image will be drawn on
+     * @param transparentRGB the transparent RGB color as an integer
+     * @throws IOException if the image file is not found
+     */
     private void drawItemOnBoard(int[][] boardPixelArray, String imagePath, 
             Point drawCoords, int transparentRGB) throws IOException {
         // Open item image and get pixel array

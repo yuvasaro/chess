@@ -373,3 +373,6 @@ bin/
 
 # Current board position
 current_board.png
+
+# PGN files
+*.pgn
