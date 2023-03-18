@@ -3,6 +3,7 @@ package game;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.awt.Point;
+import java.io.File;
 import java.io.FileWriter;
 import java.lang.reflect.Constructor;
 import java.time.LocalDate;
@@ -21,18 +22,22 @@ public class Game {
         "[Result \"%6$s\"]\n" +
         "[WhiteTitle \"GM\"]\n" +
         "[BlackTitle \"GM\"]\n\n";
-    private static final String PGN_FILE = "bin/%s_vs_%s.pgn";
+    private static final String DIRECTORY = "bin/%1$s_vs_%2$s";
+    private static final String PGN_FILE = DIRECTORY + "/%1$s_vs_%2$s.pgn";
+    private static final String SAVE_IMAGE_FILE = DIRECTORY + "/board.png";
 
     // Instance variables
     private LocalDate date;
     private boolean whiteToPlay;
     private Board board;
+    private int moveNumber = 0;
     private Piece lastMoved = null;
     private Point lastMovedInitialCoords = null;
     private String whiteName;
     private String blackName;
     private Team winner;
     private String result;
+    private String pgn = "";
     private Map<String, String> letterPieceMapping = Map.of(
         "N", "Knight",
         "B", "Bishop",
@@ -41,10 +46,6 @@ public class Game {
         "K", "King"
     );
 
-    // Game moves counter and PGN string
-    private int moveNumber = 0;
-    private String pgn = "";
-
     /**
      * Creates a new game with white as the first player
      */
@@ -52,11 +53,6 @@ public class Game {
         date = LocalDate.now();
         whiteToPlay = true;
         board = new Board();
-        try {
-            board.saveAsImage(whiteToPlay, null, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -76,6 +72,16 @@ public class Game {
         whiteName = scanner.nextLine();
         System.out.print("Who is playing Black? ");
         blackName = scanner.nextLine();
+
+        // Create new directory and save board
+        new File(String.format(DIRECTORY, whiteName, blackName)).mkdirs();
+        try {
+            board.saveAsImage(whiteToPlay, lastMovedInitialCoords, 
+                lastMoved, String.format(SAVE_IMAGE_FILE, whiteName, 
+                blackName));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Game loop
         do {
@@ -152,7 +158,8 @@ public class Game {
             // Save board image
             try {
                 board.saveAsImage(whiteToPlay, lastMovedInitialCoords, 
-                    lastMoved);
+                    lastMoved, String.format(SAVE_IMAGE_FILE, whiteName, 
+                    blackName));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -768,6 +775,9 @@ public class Game {
                 whiteName, blackName, result) + pgn;
 
             // Write to PGN file
+            File pgnFile = new File(String.format(
+                PGN_FILE, whiteName, blackName));
+            pgnFile.getParentFile().mkdirs();
             FileWriter myWriter = new FileWriter(String.format(
                 PGN_FILE, whiteName, blackName));
             myWriter.write(gamePGN);

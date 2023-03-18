@@ -20,7 +20,6 @@ public class Board {
         "assets/highlight_initial.png";
     private static final String HIGHLIGHT_DESTINATION = 
         "assets/highlight_destination.png";
-    private static final String SAVE_IMAGE = "bin/current_board.png";
     
     // Board and pieces
     private Piece[][] board;
@@ -316,7 +315,7 @@ public class Board {
      * @throws IOException if an image file is not found
      */
     public void saveAsImage(boolean whiteToPlay, Point lastMovedInitialCoords, 
-            Piece lastMoved) throws IOException {
+            Piece lastMoved, String saveImagePath) throws IOException {
         Piece[][] theBoard = whiteToPlay ? getBoard() : flipBoard();
 
         // RGB byte shifts
@@ -374,7 +373,7 @@ public class Board {
         }
 
         // Save to output file
-        File outputFile = new File(SAVE_IMAGE);
+        File outputFile = new File(saveImagePath);
         ImageIO.write(updatedBoard, "png", outputFile);
     }
 }
