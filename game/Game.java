@@ -456,7 +456,7 @@ public class Game {
         // Get all pieces that could be the one to move
         ArrayList<Piece> candidates = new ArrayList<>();
         for (Piece piece : teamPieces) {
-            if (piece.toString().toUpperCase().equals(pieceString)) {
+            if (piece.toString().equals(pieceString)) {
                 if (piece instanceof Pawn && 
                         !((Pawn) piece).getPawnSpecifier().equals(pawnString)) {
                     continue;
