@@ -328,8 +328,8 @@ public class Board {
         int[][] boardPixelArray = open(boardImage);
 
         // Transparent RGB color as pixel int
-        int transparentRGB = (255 << redByteShift) + (255 << greenByteShift) + 
-            (255 << blueByteShift);
+        int transparentRGB = (0 << redByteShift) + (0 << greenByteShift) + 
+            (0 << blueByteShift);
 
         // Loop through all pieces on the board and add draw them
         for (int i = 0; i < SIZE; i++) {
