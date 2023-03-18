@@ -200,15 +200,4 @@ public class MoveHandler {
         // Return string of square (ex. "e4")
         return letter + number;
     }
-
-    /**
-     * Main method for testing
-     * @param args
-     */
-    public static void main(String[] args) {
-        System.out.println(toCoords("e4"));
-        System.out.println(toCoords("e6"));
-        System.out.println(toSquare(new Point(4, 3)));
-        System.out.println(toSquare(new Point(4, 5)));
-    }
 }

@@ -76,8 +76,8 @@ public class Game {
         // Create new directory and save board
         new File(String.format(DIRECTORY, whiteName, blackName)).mkdirs();
         try {
-            board.saveAsImage(whiteToPlay, null, null, String.format(
-                SAVE_IMAGE_FILE, whiteName, blackName));
+            FileHandler.saveAsImage(board, whiteToPlay, null, null, 
+                String.format(SAVE_IMAGE_FILE, whiteName, blackName));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -153,9 +153,9 @@ public class Game {
 
             // Save board image
             try {
-                board.saveAsImage(whiteToPlay, lastMovedInitialCoords, 
-                    lastMoved, String.format(SAVE_IMAGE_FILE, whiteName, 
-                    blackName));
+                FileHandler.saveAsImage(board, whiteToPlay, 
+                    lastMovedInitialCoords, lastMoved, String.format(
+                        SAVE_IMAGE_FILE, whiteName, blackName));
             } catch (Exception e) {
                 e.printStackTrace();
             }
