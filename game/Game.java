@@ -3,8 +3,6 @@ package game;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.awt.Point;
-import java.io.File;
-import java.io.FileWriter;
 import java.lang.reflect.Constructor;
 import java.time.LocalDate;
 import java.util.Map;
@@ -13,19 +11,6 @@ import java.util.Map;
  * The chess game engine
  */
 public class Game {
-    // PGN format
-    private static final String PGN_FORMAT = 
-        "[Event \"1v1 me in Chess rn\"]\n" +
-        "[Date \"%d.%d.%d\"]\n" +
-        "[White \"%4$s\"]\n" +
-        "[Black \"%5$s\"]\n" +
-        "[Result \"%6$s\"]\n" +
-        "[WhiteTitle \"GM\"]\n" +
-        "[BlackTitle \"GM\"]\n\n";
-    private static final String DIRECTORY = "bin/%1$s_vs_%2$s";
-    private static final String PGN_FILE = DIRECTORY + "/%1$s_vs_%2$s.pgn";
-    private static final String SAVE_IMAGE_FILE = DIRECTORY + "/board.png";
-
     // Instance variables
     private LocalDate date;
     private boolean whiteToPlay;
@@ -74,7 +59,7 @@ public class Game {
         blackName = scanner.nextLine();
 
         // Create new directory and save board
-        new File(String.format(DIRECTORY, whiteName, blackName)).mkdirs();
+        FileHandler.makeDirectory(whiteName, blackName);
         try {
             FileHandler.saveAsImage(board, whiteToPlay, null, null, 
                 whiteName, blackName);
@@ -189,7 +174,7 @@ public class Game {
         pgn += result;
 
         // Save PGN
-        savePGN(whiteName, blackName);
+        FileHandler.savePGN(date, whiteName, blackName, result, pgn);
     }
 
     /**
@@ -749,36 +734,6 @@ public class Game {
         // Stalemate - winner stays null
         else {
             return true;
-        }
-    }
-
-    /**
-     * Saves the game to a PGN file
-     * @param whiteName white's name
-     * @param blackName black's name
-     * @param result the result of the game
-     */
-    public void savePGN(String whiteName, String blackName) {
-        try {
-            // Get today's date
-            int year = date.getYear();
-            int month = date.getMonthValue();
-            int day = date.getDayOfMonth();
-
-            // Organize PGN data
-            String gamePGN = String.format(PGN_FORMAT, year, month, day, 
-                whiteName, blackName, result) + pgn;
-
-            // Write to PGN file
-            File pgnFile = new File(String.format(
-                PGN_FILE, whiteName, blackName));
-            pgnFile.getParentFile().mkdirs();
-            FileWriter myWriter = new FileWriter(String.format(
-                PGN_FILE, whiteName, blackName));
-            myWriter.write(gamePGN);
-            myWriter.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }
