@@ -1,3 +1,4 @@
+import api.ConsoleGame;
 import game.Game;
 
 /**
@@ -10,7 +11,7 @@ public class Main {
      * @param args
      */
     public static void main(String[] args) {
-        Game game = new Game();
+        Game game = new Game(new ConsoleGame());
         game.start();
     }
 }

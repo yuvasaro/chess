@@ -1,6 +1,7 @@
 package game;
 
-import java.util.Scanner;
+import api.ChessGameIO;
+
 import java.util.ArrayList;
 import java.awt.Point;
 import java.lang.reflect.Constructor;
@@ -12,6 +13,7 @@ import java.util.Map;
  */
 public class Game {
     // Instance variables
+    private ChessGameIO io;
     private LocalDate date;
     private boolean whiteToPlay;
     private Board board;
@@ -33,8 +35,10 @@ public class Game {
 
     /**
      * Creates a new game with white as the first player
+     * @param io a ChessGameIO object
      */
-    public Game() {
+    public Game(ChessGameIO io) {
+        this.io = io;
         date = LocalDate.now();
         whiteToPlay = true;
         board = new Board();
@@ -49,14 +53,11 @@ public class Game {
         boolean drawOffered = false;
         boolean drawAccepted = false;
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Start game.\n");
+        io.print("Start game.\n");
 
         // Get player names
-        System.out.print("Who is playing White? ");
-        whiteName = scanner.nextLine();
-        System.out.print("Who is playing Black? ");
-        blackName = scanner.nextLine();
+        whiteName = io.prompt("Who is playing White? ");
+        blackName = io.prompt("Who is playing Black? ");
 
         // Create new directory and save board
         FileHandler.makeDirectory(whiteName, blackName);
@@ -75,8 +76,7 @@ public class Game {
 
             do {
                 // Take input
-                System.out.print(String.format("%s to play: ", whoPlays));
-                input = scanner.nextLine();
+                input = io.prompt(String.format("%s to play: ", whoPlays));
 
                 // Check for resign or draw
                 if (input.toLowerCase().equals("resign")) {
@@ -90,9 +90,9 @@ public class Game {
                     // Prompt other player
                     String answer = null;
                     do {
-                        System.out.print(String.format(
-                            "%s, accept draw? (Yes/No): ", whoPlays));
-                        answer = scanner.nextLine().toLowerCase();
+                        answer = io.prompt(String.format(
+                            "%s, accept draw? (Yes/No): ", whoPlays))
+                                .toLowerCase();
                         if (answer.equals("yes") || answer.equals("y")) {
                             drawAccepted = true;
                             break;
@@ -116,7 +116,7 @@ public class Game {
                 // Validate move and execute it if valid
                 validMove = move(input);
                 if (!validMove) {
-                    System.out.println("Invalid move.");
+                    io.print("Invalid move.");
                 }
             } while (!validMove);
 
@@ -146,10 +146,8 @@ public class Game {
 
         } while (!gameEnd());
 
-        scanner.close();
-
-        System.out.println("\nEnd game.");
-        System.out.println();
+        io.closeInputStream();
+        io.print("\nEnd game.\n");
 
         // Determine winner if a player resigned
         if (resign) {
@@ -163,13 +161,13 @@ public class Game {
         // Print winner
         if (winner == Team.WHITE) {
             result = "1-0";
-            System.out.println("White wins!");
+            io.print("White wins!");
         } else if (winner == Team.BLACK) {
             result = "0-1";
-            System.out.println("Black wins!");
+            io.print("Black wins!");
         } else {
             result = "1/2-1/2";
-            System.out.println("It's a draw!");
+            io.print("It's a draw!");
         }
         pgn += result;
 
@@ -544,8 +542,8 @@ public class Game {
     private void undoMovePiece(Board theBoard, Piece pieceToMove, 
             Point oldCoords, Piece captured, Point capturedCoords, 
             ArrayList<Piece> opps) {
-        board.undoMovePiece(pieceToMove, oldCoords);
-        board.setPiece(captured, capturedCoords);
+        theBoard.undoMovePiece(pieceToMove, oldCoords);
+        theBoard.setPiece(captured, capturedCoords);
         capture(captured, opps, true);
     }
 
@@ -607,13 +605,12 @@ public class Game {
      * @return whether the current player is in check
      */
     private boolean isInCheck(Board theBoard) {
-        ArrayList<Piece> teamPieces = theBoard.getTeamPieces(whiteToPlay);
-        ArrayList<Piece> oppositeTeamPieces = theBoard.getTeamPieces(
-            !whiteToPlay);
+        ArrayList<Piece> team = theBoard.getTeamPieces(whiteToPlay);
+        ArrayList<Piece> opps = theBoard.getTeamPieces(!whiteToPlay);
         Point kingCoords = null;
 
         // Get team king coords
-        for (Piece piece : teamPieces) {
+        for (Piece piece : team) {
             if (piece instanceof King) {
                 kingCoords = piece.getCoords();
                 break;
@@ -621,7 +618,7 @@ public class Game {
         }
 
         // Check if opposite team pieces are attacking the king
-        for (Piece piece : oppositeTeamPieces) {
+        for (Piece piece : opps) {
             if (piece.getMoves().contains(kingCoords)) {
                 return true;
             }
