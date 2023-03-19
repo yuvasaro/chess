@@ -315,8 +315,8 @@ public class Game {
      * @return whether the promotion was successful
      */
     private boolean promotion(String[] moveComponents, boolean[] notNull) {
-        ArrayList<Piece> teamPieces = getPieces(board, "team");
-        ArrayList<Piece> oppositeTeamPieces = getPieces(board, "oppositeTeam");
+        ArrayList<Piece> teamPieces = board.getTeamPieces(whiteToPlay);
+        ArrayList<Piece> oppositeTeamPieces = board.getTeamPieces(!whiteToPlay);
 
         String square = moveComponents[MoveHandler.SQUARE];
         String promotion = moveComponents[MoveHandler.PROMOTION];
@@ -409,8 +409,8 @@ public class Game {
      * @return whether the move was successful
      */
     private boolean regularMove(String[] moveComponents) {
-        ArrayList<Piece> teamPieces = getPieces(board, "team");
-        ArrayList<Piece> oppositeTeamPieces = getPieces(board, "oppositeTeam");
+        ArrayList<Piece> teamPieces = board.getTeamPieces(whiteToPlay);
+        ArrayList<Piece> oppositeTeamPieces = board.getTeamPieces(!whiteToPlay);
 
         // Get move information
         String square = moveComponents[MoveHandler.SQUARE];
@@ -532,43 +532,12 @@ public class Game {
     }
 
     /**
-     * Gets the pieces for the team of the current turn or the opposite team
-     * @param theBoard the board to get the pieces from
-     * @param whichTeam current team or opposite team
-     * @return the pieces of the team signified in whichTeam
-     */
-    private ArrayList<Piece> getPieces(Board theBoard, String whichTeam) {
-        ArrayList<Piece> whitePieces = theBoard.getWhitePieces();
-        ArrayList<Piece> blackPieces = theBoard.getBlackPieces();
-
-        // Set team pieces and opposite team pieces based on whose turn it is
-        ArrayList<Piece> teamPieces;
-        ArrayList<Piece> oppositeTeamPieces;
-        if (whiteToPlay) {
-            teamPieces = whitePieces;
-            oppositeTeamPieces = blackPieces;
-        } else {
-            teamPieces = blackPieces;
-            oppositeTeamPieces = whitePieces;
-        }
-
-        // Return pieces based on team string
-        if (whichTeam.equals("team")) {
-            return teamPieces;
-        } else if (whichTeam.equals("oppositeTeam")) {
-            return oppositeTeamPieces;
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * Removes or undo removes a piece from a team's pieces
      * @param piece the piece to remove or add back
      * @param pieces the ArrayList of the team's pieces
      * @param undo whether to undo the capture
      */
-    private void capture(Piece piece, ArrayList<Piece> pieces, 
+    public void capture(Piece piece, ArrayList<Piece> pieces, 
             boolean undo) {
         if (piece != null) {
             if (undo) { // Add piece back
@@ -588,7 +557,7 @@ public class Game {
      * @param destination the destination square
      * @return a point if there is en passant, otherwise null
      */
-    private Point checkEnPassant(Board theBoard, Piece pieceToMove, 
+    public Point checkEnPassant(Board theBoard, Piece pieceToMove, 
             Point pieceCoords, Piece captured, Point destination) {
         // EN PASSANT bruh
         Point enPassantVictimCoords = null;
@@ -625,10 +594,10 @@ public class Game {
      * Returns whether the current player is in check
      * @return whether the current player is in check
      */
-    private boolean isInCheck(Board theBoard) {
-        ArrayList<Piece> teamPieces = getPieces(theBoard, "team");
-        ArrayList<Piece> oppositeTeamPieces = getPieces(
-            theBoard, "oppositeTeam");
+    public boolean isInCheck(Board theBoard) {
+        ArrayList<Piece> teamPieces = theBoard.getTeamPieces(whiteToPlay);
+        ArrayList<Piece> oppositeTeamPieces = theBoard.getTeamPieces(
+            !whiteToPlay);
         Point kingCoords = null;
 
         // Get team king coords
@@ -656,9 +625,9 @@ public class Game {
     private boolean gameEnd() {
         // Duplicate the board and get its pieces
         Board duplicateBoard = new Board(board);
-        ArrayList<Piece> teamPieces = getPieces(duplicateBoard, "team");
-        ArrayList<Piece> oppositeTeamPieces = getPieces(
-            duplicateBoard, "oppositeTeam");
+        ArrayList<Piece> teamPieces = duplicateBoard.getTeamPieces(whiteToPlay);
+        ArrayList<Piece> oppositeTeamPieces = duplicateBoard.getTeamPieces(
+            !whiteToPlay);
         
         // Check whether the team is in check and if they have no moves
         boolean inCheck = isInCheck(duplicateBoard);
@@ -735,5 +704,21 @@ public class Game {
         else {
             return true;
         }
+    }
+
+    /**
+     * Getter for board
+     * @return the Board object
+     */
+    public Board getBoard() {
+        return board;
+    }
+
+    /**
+     * Getter for whiteToPlay
+     * @return whether it is white's turn
+     */
+    public boolean whiteToPlay() {
+        return whiteToPlay;
     }
 }

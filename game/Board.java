@@ -154,6 +154,15 @@ public class Board {
     }
 
     /**
+     * Gets the pieces ArrayList for the current team
+     * @param whiteToPlay whether it is white's turn
+     * @return the ArrayList of pieces for the current team
+     */
+    public ArrayList<Piece> getTeamPieces(boolean whiteToPlay) {
+        return whiteToPlay ? whitePieces : blackPieces;
+    }
+
+    /**
      * Returns whether the given coordinates are in bounds
      * @param coords the coordinates to check
      * @return whether the coordinates are in bounds
