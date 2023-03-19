@@ -35,7 +35,7 @@ public class Game {
 
     /**
      * Creates a new game with white as the first player
-     * @param io a ChessGameIO object
+     * @param io a ChessGameIO object that routes input/output
      */
     public Game(ChessGameIO io) {
         this.io = io;
