@@ -197,11 +197,9 @@ public class Game {
             notNull[i] = (moveComponents[i] != null);
         }
 
-        ArrayList<Piece> pieces = board.getTeamPieces(whiteToPlay);
-
         // Castle
         if (notNull[MoveHandler.CASTLE]) {
-            return castle(moveComponents, pieces);
+            return castle(moveComponents);
         }
         // Promotion
         else if (notNull[MoveHandler.PROMOTION]) {
@@ -219,7 +217,8 @@ public class Game {
      * @param pieces an ArrayList of pieces for the current team
      * @return whether the castle was successful
      */
-    private boolean castle(String[] moveComponents, ArrayList<Piece> pieces) {
+    private boolean castle(String[] moveComponents) {
+        ArrayList<Piece> team = board.getTeamPieces(whiteToPlay);
         String castleString = moveComponents[MoveHandler.CASTLE];
         King king = null;
         Rook rook = null;
@@ -231,7 +230,7 @@ public class Game {
 
         if (castleString.equals("O-O")) { // Short castle
             // Get king and h-rook (x=7)
-            for (Piece piece : pieces) {
+            for (Piece piece : team) {
                 if (piece instanceof King) {
                     king = (King) piece;
                 } else if (piece instanceof Rook) {
@@ -243,7 +242,7 @@ public class Game {
             castleDirection = 1;
         } else { // Long castle
             // Get king and a-rook (x=0)
-            for (Piece piece : pieces) {
+            for (Piece piece : team) {
                 if (piece instanceof King) {
                     king = (King) piece;
                 } else if (piece instanceof Rook) {
@@ -463,6 +462,11 @@ public class Game {
                     break;
                 }
             }
+
+            // Specifier doesn't match - return false
+            if (pieceToMove == null) {
+                return false;
+            }
         }
 
         Point pieceCoords = pieceToMove.getCoords();
@@ -535,6 +539,7 @@ public class Game {
      * @param oldCoords the piece's old coordinates
      * @param captured the piece that was captured
      * @param capturedCoords the captured piece's coordinates
+     * @param opps the ArrayList of enemy pieces
      */
     private void undoMovePiece(Board theBoard, Piece pieceToMove, 
             Point oldCoords, Piece captured, Point capturedCoords, 
@@ -598,6 +603,7 @@ public class Game {
 
     /**
      * Returns whether the current player is in check
+     * @param theBoard the chessboard
      * @return whether the current player is in check
      */
     private boolean isInCheck(Board theBoard) {
