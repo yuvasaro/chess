@@ -202,15 +202,13 @@ public class Board {
      * @param newCoords the new position to move the piece to
      * @return the piece that was captured during the move
      */
-    public Piece movePiece(Piece piece, Point newCoords) {
+    public void movePiece(Piece piece, Point newCoords) {
         Point currentCoords = piece.getCoords();
-        Piece otherPiece = getPiece(newCoords);
 
         // Move given piece and return the original piece on that square
         setPiece(piece, newCoords);
         setPiece(null, currentCoords);
         piece.move(newCoords); // Changes coords of Piece object
-        return otherPiece;
     }
 
     /**
@@ -219,12 +217,9 @@ public class Board {
      * @param oldCoords the old position to move the piece to
      * @param captured the piece that was captured due to the move
      */
-    public void undoMovePiece(Piece piece, Point oldCoords, Piece captured) {
-        Point currentCoords = piece.getCoords();
-
+    public void undoMovePiece(Piece piece, Point oldCoords) {
         // Move piece back and reset captured piece
         setPiece(piece, oldCoords);
-        setPiece(captured, currentCoords);
         piece.undoMove(oldCoords); // Changes coords of Piece object
     }
 }
