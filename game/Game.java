@@ -523,7 +523,7 @@ public class Game {
         capture(captured, opps, false);
 
         // Make sure moving the piece doesn't cause the king to be in check
-        if (isInCheck(board)) {
+        if (isInCheck(theBoard)) {
             undoMovePiece(theBoard, pieceToMove, pieceCoords, captured, 
                 capturedCoords, opps);
             return false;
