@@ -11,7 +11,7 @@ public class King extends Piece {
     private static final String LETTER = "K";
 
     // Path to piece image
-    private static final String IMAGE = "assets/king_%s.png";
+    private static final String IMAGE = "king_%s.png";
 
     // Whether the king has moved at least once
     private boolean hasMoved;

@@ -371,8 +371,14 @@ bin/
 # Java .class files
 *.class
 
-# Current board position
-current_board.png
+# Java .jar files
+*.jar
 
 # PGN files
 *.pgn
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build

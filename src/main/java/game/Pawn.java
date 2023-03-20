@@ -11,7 +11,7 @@ public class Pawn extends Piece {
     private static final String LETTER = "P";
 
     // Path to piece image
-    private static final String IMAGE = "assets/pawn_%s.png";
+    private static final String IMAGE = "pawn_%s.png";
 
     // Whether the pawn has moved at least once
     private boolean hasMoved;

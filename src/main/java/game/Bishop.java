@@ -4,51 +4,43 @@ import java.util.ArrayList;
 import java.awt.Point;
 
 /**
- * Queen class
+ * Bishop class
  */
-public class Queen extends Piece {
+public class Bishop extends Piece {
     // String representation
-    private static final String LETTER = "Q";
+    private static final String LETTER = "B";
 
     // Path to piece image
-    private static final String IMAGE = "assets/queen_%s.png";
+    private static final String IMAGE = "bishop_%s.png";
 
     /**
-     * Queen constructor
+     * Bishop constructor
      * @param board the chessboard
      * @param team white or black
      * @param row the x coordinate
      * @param col the y coordinate
      */
-    public Queen(Board board, Team team, int row, int col) {
+    public Bishop(Board board, Team team, int row, int col) {
         super(board, LETTER, IMAGE, team, row, col);
     }
 
     /**
-     * Returns a copy of this queen for another board
+     * Returns a copy of this bishop for another board
      * @param otherBoard the other board
      */
-    public Queen copyInstance(Board otherBoard) {
+    public Bishop copyInstance(Board otherBoard) {
         Point coords = getCoords();
-        Queen copy = new Queen(otherBoard, getTeam(), coords.x, coords.y);
+        Bishop copy = new Bishop(otherBoard, getTeam(), coords.x, coords.y);
         return copy;
     }
 
     /**
-     * Queen move: Diagonal, horizontal, vertical
+     * Bishop move: Diagonal; NW, NE, SW, SE
      * @return a list of possible squares to move to
      */
     public ArrayList<Point> getMoves() {
         ArrayList<Point> possibleMoves = new ArrayList<>();
         
-        // North
-        possibleMoves.addAll(getMovesInDirection(0, 1));
-        // West
-        possibleMoves.addAll(getMovesInDirection(-1, 0));
-        // South
-        possibleMoves.addAll(getMovesInDirection(0, -1));
-        // East
-        possibleMoves.addAll(getMovesInDirection(1, 0));
         // Northwest
         possibleMoves.addAll(getMovesInDirection(-1, 1));
         // Northeast

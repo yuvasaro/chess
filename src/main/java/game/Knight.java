@@ -12,7 +12,7 @@ public class Knight extends Piece {
     private static final String LETTER = "N";
 
     // Path to piece image
-    private static final String IMAGE = "assets/knight_%s.png";
+    private static final String IMAGE = "knight_%s.png";
 
     /**
      * Knight constructor

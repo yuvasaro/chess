@@ -10,11 +10,12 @@ import java.awt.Point;
 
 public class FileHandler {
     // Locations and formats
-    private static final String IMAGE = "assets/board.png";
+    private static final String PATH = "/assets/";
+    private static final String IMAGE = PATH + "board.png";
     private static final String HIGHLIGHT_INITIAL = 
-         "assets/highlight_initial.png";
+        PATH + "highlight_initial.png";
     private static final String HIGHLIGHT_DESTINATION = 
-         "assets/highlight_destination.png";
+        PATH + "highlight_destination.png";
     private static final String PGN_FORMAT = 
         "[Event \"1v1 me in Chess rn\"]\n" +
         "[Date \"%d.%d.%d\"]\n" +
@@ -23,9 +24,9 @@ public class FileHandler {
         "[Result \"%6$s\"]\n" +
         "[WhiteTitle \"GM\"]\n" +
         "[BlackTitle \"GM\"]\n\n";
-    private static final String DIRECTORY = "bin/%1$s_vs_%2$s";
-    private static final String PGN_FILE = DIRECTORY + "/%1$s_vs_%2$s.pgn";
-    private static final String SAVE_IMAGE_FILE = DIRECTORY + "/board.png";
+    private static final String DIRECTORY = "bin/%1$s_vs_%2$s/";
+    private static final String PGN_FILE = DIRECTORY + "%1$s_vs_%2$s.pgn";
+    private static final String SAVE_IMAGE_FILE = DIRECTORY + "board.png";
 
     /**
      * Creates a directory for a game between two players
@@ -72,7 +73,8 @@ public class FileHandler {
             String imagePath, Point drawCoords, int transparentRGB) 
             throws IOException {
         // Open item image and get pixel array
-        BufferedImage itemImage = ImageIO.read(new File(imagePath));
+        BufferedImage itemImage = ImageIO.read(
+            FileHandler.class.getResource(imagePath));
         int[][] itemPixelArray = open(itemImage);
         int itemSize = itemPixelArray.length;
         
@@ -118,7 +120,8 @@ public class FileHandler {
         int blueByteShift = 0;
 
         // Open board image and get pixel array
-        BufferedImage boardImage = ImageIO.read(new File(IMAGE));
+        BufferedImage boardImage = ImageIO.read(
+            FileHandler.class.getResource(IMAGE));
         int[][] boardPixelArray = open(boardImage);
 
         // Transparent RGB color as pixel int
@@ -153,7 +156,7 @@ public class FileHandler {
                 }
 
                 // Draw piece
-                drawItemOnBoard(boardPixelArray, imagePath, 
+                drawItemOnBoard(boardPixelArray, PATH + imagePath, 
                     pointOnBoard, transparentRGB);
             }
         }
