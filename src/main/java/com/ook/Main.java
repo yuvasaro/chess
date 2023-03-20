@@ -13,7 +13,12 @@ public class Main {
      * @param args
      */
     public static void main(String[] args) {
-        Game game = new Game(new ConsoleGame());
+        Game game;
+        if (args.length == 2) {
+            game = new Game(new ConsoleGame(), args[0], args[1]);
+        } else {
+            game = new Game(new ConsoleGame());
+        }
         game.start();
     }
 }

@@ -45,6 +45,21 @@ public class Game {
     }
 
     /**
+     * Creates a new game with white as the first player
+     * @param io a ChessGameIO object that routes input/output
+     * @param whiteName the white player's name
+     * @param blackName the black player's name
+     */
+    public Game(ChessGameIO io, String whiteName, String blackName) {
+        this.io = io;
+        this.whiteName = whiteName;
+        this.blackName = blackName;
+        date = LocalDate.now();
+        whiteToPlay = true;
+        board = new Board();
+    }
+
+    /**
      * Starts the game, handles game logic
      */
     public void start() {
@@ -56,8 +71,10 @@ public class Game {
         io.print("Start game.\n");
 
         // Get player names
-        whiteName = io.prompt("Who is playing White? ");
-        blackName = io.prompt("Who is playing Black? ");
+        if (whiteName == null || blackName == null) { 
+            whiteName = io.prompt("Who is playing White? ");
+            blackName = io.prompt("Who is playing Black? ");
+        }
 
         // Create new directory and save board
         FileHandler.makeDirectory(whiteName, blackName);
