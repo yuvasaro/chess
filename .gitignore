@@ -368,9 +368,6 @@ FodyWeavers.xsd
 # bin folder
 bin/
 
-# Java .class files
-*.class
-
 # Java .jar files
 *.jar
 
