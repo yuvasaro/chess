@@ -1,4 +1,4 @@
-package com.ook.api;
+package com.ook.io;
 
 /*
  * Chess game input output interface

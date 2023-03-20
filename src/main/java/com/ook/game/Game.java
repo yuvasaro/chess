@@ -1,12 +1,12 @@
 package com.ook.game;
 
-import com.ook.api.ChessGameIO;
-
 import java.util.ArrayList;
 import java.awt.Point;
 import java.lang.reflect.Constructor;
 import java.time.LocalDate;
 import java.util.Map;
+
+import com.ook.io.ChessGameIO;
 
 /**
  * The chess game engine

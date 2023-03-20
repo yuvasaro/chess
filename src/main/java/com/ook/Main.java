@@ -1,7 +1,7 @@
 package com.ook;
 
-import com.ook.api.ConsoleGame;
 import com.ook.game.Game;
+import com.ook.io.ConsoleGame;
 
 /**
  * Main class
