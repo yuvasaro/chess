@@ -1,51 +1,51 @@
-package game;
+package com.ook.game;
 
 import java.util.ArrayList;
 import java.awt.Point;
 
 /**
- * Rook class
+ * King class
  */
-public class Rook extends Piece {
+public class King extends Piece {
     // String representation
-    private static final String LETTER = "R";
+    private static final String LETTER = "K";
 
     // Path to piece image
-    private static final String IMAGE = "rook_%s.png";
+    private static final String IMAGE = "king_%s.png";
 
-    // Whether the rook has moved at least once
+    // Whether the king has moved at least once
     private boolean hasMoved;
 
     /**
-     * Rook constructor
+     * King constructor
      * @param board the chessboard
      * @param team white or black
      * @param row the x coordinate
      * @param col the y coordinate
      */
-    public Rook(Board board, Team team, int row, int col) {
+    public King(Board board, Team team, int row, int col) {
         super(board, LETTER, IMAGE, team, row, col);
         hasMoved = false;
     }
 
     /**
-     * Returns a copy of this rook for another board
+     * Returns a copy of this king for another board
      * @param otherBoard the other board
      */
-    public Rook copyInstance(Board otherBoard) {
+    public King copyInstance(Board otherBoard) {
         Point coords = getCoords();
-        Rook copy = new Rook(otherBoard, getTeam(), coords.x, coords.y);
+        King copy = new King(otherBoard, getTeam(), coords.x, coords.y);
         copy.hasMoved = this.hasMoved;
         return copy;
     }
 
     /**
-     * Rook move: Horizontal and vertical (N, W, S, E)
+     * King move: 1 square in all directions
      * @return a list of possible squares to move to
      */
     public ArrayList<Point> getMoves() {
         ArrayList<Point> possibleMoves = new ArrayList<>();
-        
+
         // North
         possibleMoves.addAll(getMovesInDirection(0, 1));
         // West
@@ -54,15 +54,23 @@ public class Rook extends Piece {
         possibleMoves.addAll(getMovesInDirection(0, -1));
         // East
         possibleMoves.addAll(getMovesInDirection(1, 0));
+        // Northwest
+        possibleMoves.addAll(getMovesInDirection(-1, 1));
+        // Northeast
+        possibleMoves.addAll(getMovesInDirection(1, 1));
+        // Southwest
+        possibleMoves.addAll(getMovesInDirection(-1, -1));
+        // Southeast
+        possibleMoves.addAll(getMovesInDirection(1, -1));
 
         return possibleMoves;
     }
 
     /**
-     * Gets a list of possible squares to move to in one direction
+     * Gets a list containing the possible square (or empty list)
      * @param dx x direction
      * @param dy y direction
-     * @return a list of possible moves in the given direction
+     * @return a list of one or zero possible moves in the given direction
      */
     private ArrayList<Point> getMovesInDirection(int dx, int dy) {
         ArrayList<Point> possibleMoves = new ArrayList<>();
@@ -72,20 +80,11 @@ public class Rook extends Piece {
         Point possibleCoords = new Point(coords.x + dx, coords.y + dy);
         Piece otherPiece = board.getPiece(possibleCoords);
 
-        // Add all squares in path while there are no pieces in the way
-        while (otherPiece == null && board.isInBounds(possibleCoords)) {
-            possibleMoves.add(possibleCoords);
-
-            // Get next point and piece in the current direction
-            possibleCoords = new Point(
-                possibleCoords.x + dx, possibleCoords.y + dy);
-            otherPiece = board.getPiece(possibleCoords);
-        }
-
-        // Check the piece that the while loop encountered
+        // Add square if there is no piece or the piece is on the opposite team
         if (board.isInBounds(possibleCoords)) {
-            // Add possible move if other piece is on the opposite team
-            if (this.getTeam() != otherPiece.getTeam()) {
+            if (otherPiece == null) {
+                possibleMoves.add(possibleCoords);
+            } else if (this.getTeam() != otherPiece.getTeam()) {
                 possibleMoves.add(possibleCoords);
             }
         }

@@ -1,54 +1,59 @@
-package game;
+package com.ook.game;
 
 import java.util.ArrayList;
 import java.awt.Point;
 
 /**
- * Bishop class
+ * Rook class
  */
-public class Bishop extends Piece {
+public class Rook extends Piece {
     // String representation
-    private static final String LETTER = "B";
+    private static final String LETTER = "R";
 
     // Path to piece image
-    private static final String IMAGE = "bishop_%s.png";
+    private static final String IMAGE = "rook_%s.png";
+
+    // Whether the rook has moved at least once
+    private boolean hasMoved;
 
     /**
-     * Bishop constructor
+     * Rook constructor
      * @param board the chessboard
      * @param team white or black
      * @param row the x coordinate
      * @param col the y coordinate
      */
-    public Bishop(Board board, Team team, int row, int col) {
+    public Rook(Board board, Team team, int row, int col) {
         super(board, LETTER, IMAGE, team, row, col);
+        hasMoved = false;
     }
 
     /**
-     * Returns a copy of this bishop for another board
+     * Returns a copy of this rook for another board
      * @param otherBoard the other board
      */
-    public Bishop copyInstance(Board otherBoard) {
+    public Rook copyInstance(Board otherBoard) {
         Point coords = getCoords();
-        Bishop copy = new Bishop(otherBoard, getTeam(), coords.x, coords.y);
+        Rook copy = new Rook(otherBoard, getTeam(), coords.x, coords.y);
+        copy.hasMoved = this.hasMoved;
         return copy;
     }
 
     /**
-     * Bishop move: Diagonal; NW, NE, SW, SE
+     * Rook move: Horizontal and vertical (N, W, S, E)
      * @return a list of possible squares to move to
      */
     public ArrayList<Point> getMoves() {
         ArrayList<Point> possibleMoves = new ArrayList<>();
         
-        // Northwest
-        possibleMoves.addAll(getMovesInDirection(-1, 1));
-        // Northeast
-        possibleMoves.addAll(getMovesInDirection(1, 1));
-        // Southwest
-        possibleMoves.addAll(getMovesInDirection(-1, -1));
-        // Southeast
-        possibleMoves.addAll(getMovesInDirection(1, -1));
+        // North
+        possibleMoves.addAll(getMovesInDirection(0, 1));
+        // West
+        possibleMoves.addAll(getMovesInDirection(-1, 0));
+        // South
+        possibleMoves.addAll(getMovesInDirection(0, -1));
+        // East
+        possibleMoves.addAll(getMovesInDirection(1, 0));
 
         return possibleMoves;
     }

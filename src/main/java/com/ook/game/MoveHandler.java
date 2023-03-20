@@ -1,4 +1,4 @@
-package game;
+package com.ook.game;
 
 import java.awt.Point;
 import java.util.regex.*;

@@ -1,6 +1,6 @@
-package game;
+package com.ook.game;
 
-import api.ChessGameIO;
+import com.ook.api.ChessGameIO;
 
 import java.util.ArrayList;
 import java.awt.Point;

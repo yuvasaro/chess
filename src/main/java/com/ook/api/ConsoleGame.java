@@ -1,4 +1,4 @@
-package api;
+package com.ook.api;
 
 import java.util.Scanner;
 

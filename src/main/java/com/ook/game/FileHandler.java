@@ -1,4 +1,4 @@
-package game;
+package com.ook.game;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
