@@ -15,3 +15,5 @@ Rebuild the jar as needed when changes are made to the code.
 
 ## Run the game (console)
 Run `java -jar <jarfile> [player1] [player2]`
+*Note*: `[player1]` and `[player2]` are optional arguments.
+If no player names are given, the program will prompt you to enter player names.
