@@ -1,7 +1,7 @@
 package com.ook;
 
 import com.ook.game.Game;
-import com.ook.io.ConsoleGame;
+import com.ook.io.ConsoleGameIO;
 
 /**
  * Main class
@@ -15,9 +15,9 @@ public class Main {
     public static void main(String[] args) {
         Game game;
         if (args.length == 2) {
-            game = new Game(new ConsoleGame(), args[0], args[1]);
+            game = new Game(new ConsoleGameIO(), args[0], args[1]);
         } else {
-            game = new Game(new ConsoleGame());
+            game = new Game(new ConsoleGameIO());
         }
         game.start();
     }

@@ -5,13 +5,13 @@ import java.util.Scanner;
 /**
  * Plays the game in the console/terminal
  */
-public class ConsoleGame implements ChessGameIO {
+public class ConsoleGameIO implements ChessGameIO {
     private Scanner scanner;
 
     /**
      * ConsoleGame constructor
      */
-    public ConsoleGame() {
+    public ConsoleGameIO() {
         scanner = new Scanner(System.in);
     }
 
