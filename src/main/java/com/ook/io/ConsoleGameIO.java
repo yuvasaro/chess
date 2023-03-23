@@ -20,7 +20,6 @@ public class ConsoleGameIO implements ChessGameIO {
      * @param message the message to prompt
      * @return the given input
      */
-    @Override
     public String prompt(String message) {
         System.out.print(message);
         return scanner.nextLine();
@@ -30,7 +29,6 @@ public class ConsoleGameIO implements ChessGameIO {
      * Prints a message to the console
      * @param message the message to print
      */
-    @Override
     public void print(String message) {
         System.out.println(message);
     }
@@ -38,8 +36,12 @@ public class ConsoleGameIO implements ChessGameIO {
     /**
      * Closes the scanner
      */
-    @Override
     public void closeInputStream() {
         scanner.close();
     }
+
+    /**
+     * Update function not needed for console game
+     */
+    public void update() {}
 }

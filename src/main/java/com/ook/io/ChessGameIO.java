@@ -21,4 +21,9 @@ public interface ChessGameIO {
      * Closes the input stream (ex. scanner for System.in)
      */
     void closeInputStream();
+
+    /**
+     * Update function
+     */
+    void update();
 }

@@ -81,6 +81,7 @@ public class Game {
         try {
             FileHandler.saveAsImage(board, whiteToPlay, null, null, 
                 whiteName, blackName);
+            io.update();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -157,6 +158,7 @@ public class Game {
             try {
                 FileHandler.saveAsImage(board, whiteToPlay, 
                     lastMovedInitialCoords, lastMoved, whiteName, blackName);
+                io.update();
             } catch (Exception e) {
                 e.printStackTrace();
             }
