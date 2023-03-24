@@ -5,13 +5,6 @@ package com.ook.io;
  */
 public interface ChessGameIO {
     /**
-     * Sends a prompt and returns the given input
-     * @param message the message to prompt
-     * @return the given input
-     */
-    String prompt(String message);
-
-    /**
      * Prints a message to the output destination
      * @param message the message to print
      */
@@ -26,4 +19,14 @@ public interface ChessGameIO {
      * Update function
      */
     void update();
+
+    /**
+     * Send PGN
+     */
+    void sendPGN();
+
+    /**
+     * Cleanup
+     */
+    void cleanup();
 }

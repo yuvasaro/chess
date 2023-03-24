@@ -17,7 +17,7 @@ public class FileHandler {
     private static final String HIGHLIGHT_DESTINATION = 
         PATH + "highlight_destination.png";
     private static final String PGN_FORMAT = 
-        "[Event \"1v1 me in Chess rn\"]\n" +
+        "[Event \"1v1 Chess\"]\n" +
         "[Date \"%d.%d.%d\"]\n" +
         "[White \"%4$s\"]\n" +
         "[Black \"%5$s\"]\n" +
@@ -35,6 +35,24 @@ public class FileHandler {
      */
     public static void makeDirectory(String whiteName, String blackName) {
         new File(String.format(DIRECTORY, whiteName, blackName)).mkdirs();
+    }
+
+    /**
+     * Deletes a directory for a game between two players
+     * @param whiteName the white player's name
+     * @param blackName the black player's name
+     */
+    public static void deleteDirectory(String whiteName, String blackName) {
+        File dir = new File(String.format(DIRECTORY, whiteName, blackName));
+
+        // Delete the files inside the directory
+        String[] entries = dir.list();
+        for(String filename: entries){
+            File file = new File(dir.getPath(), filename);
+            file.delete();
+        }
+
+        dir.delete();
     }
 
     /**
@@ -207,5 +225,25 @@ public class FileHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Gets the file of a game board
+     * @param whiteName the white player's name
+     * @param blackName the black player's name
+     * @return the board file
+     */
+    public static File getBoardFile(String whiteName, String blackName) {
+        return new File(String.format(SAVE_IMAGE_FILE, whiteName, blackName));
+    }
+
+    /**
+     * Gets the PGN file of a game
+     * @param whiteName the white player's name
+     * @param blackName the black player's name
+     * @return the PGN file of the game between the two players
+     */
+    public static File getPGNFile(String whiteName, String blackName) {
+        return new File(String.format(PGN_FILE, whiteName, blackName));
     }
 }

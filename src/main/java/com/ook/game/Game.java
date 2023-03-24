@@ -17,11 +17,18 @@ public class Game {
     private LocalDate date;
     private boolean whiteToPlay;
     private Board board;
+    private String whiteName;
+    private String blackName;
+    private boolean validMove;
+    private boolean gameEnd;
+    private boolean resign;
+    private boolean drawOffered;
+    private boolean drawAccepted;
+    private String movePrompt = "%s to play. ";
+    private String drawPrompt = "%s, accept draw? (Yes/No) ";
     private int moveNumber = 0;
     private Piece lastMoved = null;
     private Point lastMovedInitialCoords = null;
-    private String whiteName;
-    private String blackName;
     private Team winner;
     private String result;
     private String pgn = "";
@@ -36,17 +43,6 @@ public class Game {
     /**
      * Creates a new game with white as the first player
      * @param io a ChessGameIO object that routes input/output
-     */
-    public Game(ChessGameIO io) {
-        this.io = io;
-        date = LocalDate.now();
-        whiteToPlay = true;
-        board = new Board();
-    }
-
-    /**
-     * Creates a new game with white as the first player
-     * @param io a ChessGameIO object that routes input/output
      * @param whiteName the white player's name
      * @param blackName the black player's name
      */
@@ -57,146 +53,131 @@ public class Game {
         date = LocalDate.now();
         whiteToPlay = true;
         board = new Board();
-    }
-
-    /**
-     * Starts the game, handles game logic
-     */
-    public void start() {
-        // Store booleans for resign and draw
-        boolean resign = false;
-        boolean drawOffered = false;
-        boolean drawAccepted = false;
-
-        io.print("Start game.\n");
-
-        // Get player names
-        if (whiteName == null || blackName == null) { 
-            whiteName = io.prompt("Who is playing White? ");
-            blackName = io.prompt("Who is playing Black? ");
-        }
 
         // Create new directory and save board
         FileHandler.makeDirectory(whiteName, blackName);
         try {
-            FileHandler.saveAsImage(board, whiteToPlay, null, null, 
-                whiteName, blackName);
+            FileHandler.saveAsImage(board, whiteToPlay, null, null,
+                    whiteName, blackName);
             io.update();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
-        // Game loop
-        do {
-            String whoPlays = whiteToPlay ? "White" : "Black";
-            boolean validMove = false;
-            String input = null;
+    /**
+     * Takes the next move, handles game logic
+     * @param input the move input
+     */
+    public void takeNextMove(String input) {
+        String whoPlays = whiteToPlay ? "White" : "Black";
 
-            do {
-                // Take input
-                input = io.prompt(String.format("%s to play: ", whoPlays));
+        // Start game with null input
+        if (input == null) {
+            io.print(String.format(movePrompt, whoPlays));
+            return;
+        }
 
-                // Check for resign or draw
-                if (input.toLowerCase().equals("resign")) {
-                    resign = true;
-                    break;
-                } else if (input.toLowerCase().equals("draw")) {
-                    drawOffered = true;
-                    whiteToPlay = !whiteToPlay;
-                    whoPlays = whiteToPlay ? "White" : "Black";
+        validMove = false;
 
-                    // Prompt other player
-                    String answer = null;
-                    do {
-                        answer = io.prompt(String.format(
-                            "%s, accept draw? (Yes/No): ", whoPlays))
-                                .toLowerCase();
-                        if (answer.equals("yes") || answer.equals("y")) {
-                            drawAccepted = true;
-                            break;
-                        } else if (answer.equals("no") || 
-                                answer.equals("n")) {
-                            // Reset
-                            drawOffered = false;
-                        } else {
-                            answer = null;
-                        }
-                    } while (answer == null);
-
-                    if (drawAccepted) {
-                        break;
-                    } else {
-                        validMove = true;
-                        continue;
-                    }
-                }
-                
-                // Validate move and execute it if valid
+        // Check for draw accepted
+        if (drawOffered) {
+            if (input.equals("yes") || input.equals("y")) {
+                drawAccepted = true;
+            } else if (input.equals("no") ||
+                    input.equals("n")) {
+                // Reset
+                drawOffered = false;
+                whiteToPlay = !whiteToPlay;
+            }
+        } else {
+            // Check for resign
+            if (input.toLowerCase().equals("resign")) {
+                resign = true;
+            }
+            // Check for draw offered
+            else if (input.toLowerCase().equals("draw")) {
+                drawOffered = true;
+                whiteToPlay = !whiteToPlay;
+            }
+            // Validate move and execute it if valid
+            else {
                 validMove = move(input);
                 if (!validMove) {
                     io.print("Invalid move.");
+                } else {
+                    // Add move to pgn
+                    if (whiteToPlay) {
+                        moveNumber++;
+                        pgn += String.format("%s. %s ", moveNumber, input);
+                    } else {
+                        pgn += String.format("%s ", input);
+                    }
+
+                    // Toggle whiteToPlay to change to next player's turn
+                    whiteToPlay = !whiteToPlay;
+
+                    // Save board image
+                    try {
+                        FileHandler.saveAsImage(board, whiteToPlay,
+                                lastMovedInitialCoords, lastMoved, whiteName, blackName);
+                        io.update();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-            } while (!validMove);
+            }
+        }
 
-            // Stop game if resign or draw
+        // Check game end
+        gameEnd = resign || (drawOffered && drawAccepted) || checkGameEnd();
+
+        if (gameEnd) {
+            io.closeInputStream(); // Stop taking input
+
+            // Determine winner if a player resigned
+            if (resign) {
+                if (whiteToPlay) {
+                    winner = Team.BLACK;
+                } else {
+                    winner = Team.WHITE;
+                }
+            }
+
+            // Need to do an extra update for resign/draw (bot resends board)
             if (resign || (drawOffered && drawAccepted)) {
-                break;
-            }
-
-            // Add move to pgn
-            if (whiteToPlay) {
-                moveNumber++;
-                pgn += String.format("%s. %s ", moveNumber, input);
-            } else {
-                pgn += String.format("%s ", input);
-            }
-
-            // Toggle whiteToPlay to change to next player's turn
-            whiteToPlay = !whiteToPlay;
-
-            // Save board image
-            try {
-                FileHandler.saveAsImage(board, whiteToPlay, 
-                    lastMovedInitialCoords, lastMoved, whiteName, blackName);
                 io.update();
-            } catch (Exception e) {
-                e.printStackTrace();
             }
 
-        } while (!gameEnd());
-
-        io.closeInputStream();
-        io.print("\nEnd game.\n");
-
-        // Determine winner if a player resigned
-        if (resign) {
-            if (whiteToPlay) {
-                winner = Team.BLACK;
+            // Print winner
+            if (winner == Team.WHITE) {
+                result = "1-0";
+                io.print(whiteName + " wins!");
+            } else if (winner == Team.BLACK) {
+                result = "0-1";
+                io.print(blackName + " wins!");
             } else {
-                winner = Team.WHITE;
+                result = "1/2-1/2";
+                io.print("It's a draw!");
+            }
+            pgn += result;
+
+            // Save PGN
+            FileHandler.savePGN(date, whiteName, blackName, result, pgn);
+
+        } else { // Prompt next move
+            whoPlays = whiteToPlay ? "White" : "Black";
+            if (drawOffered) {
+                io.print(String.format(drawPrompt, whoPlays));
+            } else {
+                io.print(String.format(movePrompt, whoPlays));
             }
         }
-
-        // Print winner
-        if (winner == Team.WHITE) {
-            result = "1-0";
-            io.print("White wins!");
-        } else if (winner == Team.BLACK) {
-            result = "0-1";
-            io.print("Black wins!");
-        } else {
-            result = "1/2-1/2";
-            io.print("It's a draw!");
-        }
-        pgn += result;
-
-        // Save PGN
-        FileHandler.savePGN(date, whiteName, blackName, result, pgn);
     }
 
     /**
      * Checks whether a given move is valid and makes the move if it is
-     * @param moveComponents a string array of the move's components
+     * @param moveInput the given player move
      * @return whether the move was valid and successfully executed
      */
     private boolean move(String moveInput) {
@@ -231,7 +212,6 @@ public class Game {
     /**
      * Executes the castle maneuver
      * @param moveComponents a string array of the move's components
-     * @param pieces an ArrayList of pieces for the current team
      * @return whether the castle was successful
      */
     private boolean castle(String[] moveComponents) {
@@ -650,7 +630,7 @@ public class Game {
      * Returns whether the game has ended or not
      * @return whether the game has ended or not
      */
-    private boolean gameEnd() {
+    private boolean checkGameEnd() {
         // Duplicate the board and get its pieces
         Board duplicateBoard = new Board(board);
         ArrayList<Piece> team = duplicateBoard.getTeamPieces(whiteToPlay);
@@ -688,11 +668,24 @@ public class Game {
         // Checkmate - winner is opposite team
         if (inCheck) {
             winner = whiteToPlay ? Team.BLACK : Team.WHITE;
-            return true;
         }
-        // Stalemate - winner stays null
-        else {
-            return true;
-        }
+        // Otherwise Stalemate - winner stays null
+        return true;
+    }
+
+    /**
+     * Returns whose turn it is
+     * @return true for white to play, false for black to play
+     */
+    public boolean whiteToPlay() {
+        return whiteToPlay;
+    }
+
+    /**
+     * Returns whether the game has ended
+     * @return whether the game has ended
+     */
+    public boolean ended() {
+        return gameEnd;
     }
 }

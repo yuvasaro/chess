@@ -1,5 +1,9 @@
 package com.ook.io;
 
+import com.ook.game.FileHandler;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.Scanner;
 
 /**
@@ -7,24 +11,17 @@ import java.util.Scanner;
  */
 public class ConsoleGameIO implements ChessGameIO {
     private Scanner scanner;
+    private String whiteName;
+    private String blackName;
 
     /**
      * ConsoleGame constructor
      */
-    public ConsoleGameIO() {
+    public ConsoleGameIO(String whiteName, String blackName) {
         scanner = new Scanner(System.in);
+        this.whiteName = whiteName;
+        this.blackName = blackName;
     }
-
-    /**
-     * Sends a prompt to the console and returns the given input
-     * @param message the message to prompt
-     * @return the given input
-     */
-    public String prompt(String message) {
-        System.out.print(message);
-        return scanner.nextLine();
-    }
-
     /**
      * Prints a message to the console
      * @param message the message to print
@@ -44,4 +41,36 @@ public class ConsoleGameIO implements ChessGameIO {
      * Update function not needed for console game
      */
     public void update() {}
+
+    /**
+     * Sends PGN as text to the console
+     */
+    public void sendPGN() {
+        // Print lines of PGN file
+        System.out.println("\nPGN:");
+        try (BufferedReader br = new BufferedReader(
+                new FileReader(FileHandler.getPGNFile(whiteName, blackName)))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Clean up files in bin
+     */
+    public void cleanup() {
+        FileHandler.deleteDirectory(whiteName, blackName);
+    }
+
+    /**
+     * Gets the next input entered
+     * @return the next input from the console
+     */
+    public String getNextInput() {
+        return scanner.nextLine();
+    }
 }
