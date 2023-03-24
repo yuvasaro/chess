@@ -15,11 +15,11 @@ public class Main {
     
     /**
      * Main method
-     * @param args
+     * @param args command line arguments
      */
     public static void main(String[] args) throws IOException {
-        Game game = null;
-        ChessGameIO io = null;
+        Game game;
+        ChessGameIO io;
 
         // Determine which type of game to start
         if (args.length == 3) {
