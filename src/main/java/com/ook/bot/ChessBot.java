@@ -163,8 +163,7 @@ public class ChessBot extends ListenerAdapter {
     public static void main(String[] args) throws Exception {
         // Get bot token from config json
         JSONParser parser = new JSONParser();
-        JSONObject obj = (JSONObject) parser.parse(new FileReader(
-                "src/main/java/com/ook/bot/config.json"));
+        JSONObject obj = (JSONObject) parser.parse(new FileReader("config.json"));
         String token = (String) obj.get("token");
 
         JDABuilder.createDefault(token) // Create bot with bot token
