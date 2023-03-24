@@ -14,7 +14,7 @@ import java.io.FileReader;
 import java.util.List;
 
 /**
- * Hello world!
+ * Chess bot class
  */
 public class ChessBot extends ListenerAdapter {
     private static final String PLAY_USAGE = "Usage: `!play <@player1> <@player2>`";
