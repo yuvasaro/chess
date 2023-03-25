@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Chess bot class
@@ -159,8 +160,20 @@ public class ChessBot extends ListenerAdapter {
      * @throws Exception JDA exceptions
      */
     public static void main(String[] args) throws Exception {
-        Dotenv dotenv = Dotenv.load();
-        String token = dotenv.get("TOKEN");
+        // Get bot token from dotenv
+        String token = System.getenv("TOKEN");
+        if (token == null) {
+            try {
+                Dotenv dotenv = Dotenv.load();
+                token = dotenv.get("TOKEN");
+            } catch (Exception e) {}
+        }
+        // If token still null, ask for token in console
+        if (token == null) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Enter bot token: ");
+            token = scanner.nextLine();
+        }
 
         JDABuilder.createDefault(token) // Create bot with bot token
                 .addEventListeners(new ChessBot()) // Add new ChessBot event listener
