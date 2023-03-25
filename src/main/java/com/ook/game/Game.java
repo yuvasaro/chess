@@ -688,4 +688,12 @@ public class Game {
     public boolean ended() {
         return gameEnd;
     }
+
+    /**
+     * Gets the game's board
+     * @return the Board object associated with this Game
+     */
+    public Board getBoard() {
+        return board;
+    }
 }
