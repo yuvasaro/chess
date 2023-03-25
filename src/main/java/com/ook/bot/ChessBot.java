@@ -172,6 +172,11 @@ public class ChessBot extends ListenerAdapter {
                     "Plays a move. The move should be in standard chess notation.",
                     false
             ));
+            embed.addField(new MessageEmbed.Field(
+                    "`!help`",
+                    "Displays all the commands that ChessBot responds to.",
+                    false
+            ));
 
             channel.sendMessageEmbeds(embed.build()).queue();
         }
