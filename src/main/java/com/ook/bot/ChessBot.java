@@ -2,6 +2,7 @@ package com.ook.bot;
 
 import com.ook.game.Game;
 import io.github.cdimascio.dotenv.Dotenv;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -9,6 +10,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Scanner;
 
@@ -152,6 +154,27 @@ public class ChessBot extends ListenerAdapter {
                 player2ID = null;
             }
         }
+
+        // Help command
+        if (content.equals("!help")) {
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.setTitle("ChessBot Commands");
+            embed.setColor(Color.RED);
+
+            // Add commands and descriptions as fields
+            embed.addField(new MessageEmbed.Field(
+                    "`!play @player1 @player2`",
+                    "Starts a game with `player1` as White and `player2` as Black.",
+                    false
+            ));
+            embed.addField(new MessageEmbed.Field(
+                    "`!move <move>`",
+                    "Plays a move. The move should be in standard chess notation.",
+                    false
+            ));
+
+            channel.sendMessageEmbeds(embed.build()).queue();
+        }
     }
 
     /**
@@ -161,14 +184,12 @@ public class ChessBot extends ListenerAdapter {
      */
     public static void main(String[] args) throws Exception {
         // Get bot token from dotenv
-        String token = System.getenv("TOKEN");
-        if (token == null) {
-            try {
-                Dotenv dotenv = Dotenv.load();
-                token = dotenv.get("TOKEN");
-            } catch (Exception e) {}
-        }
-        // If token still null, ask for token in console
+        String token = null;
+        try {
+            Dotenv dotenv = Dotenv.load();
+            token = dotenv.get("TOKEN");
+        } catch (Exception e) {}
+        // If token is null, ask for token in console
         if (token == null) {
             Scanner scanner = new Scanner(System.in);
             System.out.print("Enter bot token: ");

@@ -7,7 +7,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.utils.FileUpload;
 
+import java.awt.*;
 import java.io.File;
+import java.time.Instant;
 
 /**
  * Chess bot input/output
@@ -55,6 +57,7 @@ public class ChessBotIO implements ChessGameIO {
         File gameBoard = FileHandler.getBoardFile(whiteName, blackName);
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle(String.format("%1$s vs %2$s", whiteName, blackName));
+        embed.setColor(Color.BLUE);
         embed.setImage("attachment://" + gameBoard);
         channel.sendMessageEmbeds(embed.build())
                 .addFiles(FileUpload.fromData(gameBoard)).queue();
@@ -65,7 +68,11 @@ public class ChessBotIO implements ChessGameIO {
      */
     public void sendPGN() {
         File pgn = FileHandler.getPGNFile(whiteName, blackName);
-        channel.sendFiles(FileUpload.fromData(pgn)).queue();
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setDescription("Download this PGN and upload it to an analysis board at " +
+                "https://www.chess.com/analysis?tab=analysis");
+        embed.setColor(Color.GREEN);
+        channel.sendMessageEmbeds(embed.build()).addFiles(FileUpload.fromData(pgn)).queue();
     }
 
     /**
