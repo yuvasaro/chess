@@ -1,7 +1,7 @@
 # Chess
 
 ## Download latest release
-Go to the [latest release page](https://github.com/yuvasaro/chess/releases/tag/v1.0.0) and follow the instructions.
+Go to the [release page](https://github.com/yuvasaro/chess/releases) to get the latest build.
 
 ## Development setup
 
