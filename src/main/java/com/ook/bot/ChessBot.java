@@ -180,9 +180,8 @@ public class ChessBot extends ListenerAdapter {
     /**
      * Runs the discord bot
      * @param args command line arguments
-     * @throws Exception JDA exceptions
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         // Get bot token from dotenv
         String token = null;
         try {
