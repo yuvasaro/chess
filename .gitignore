@@ -418,3 +418,6 @@ replay_pid*
 
 # config json
 config.json
+
+# dotenv
+.env

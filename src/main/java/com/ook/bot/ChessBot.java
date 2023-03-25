@@ -1,16 +1,14 @@
 package com.ook.bot;
 
 import com.ook.game.Game;
+import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
-import java.io.FileReader;
 import java.util.List;
 
 /**
@@ -161,10 +159,8 @@ public class ChessBot extends ListenerAdapter {
      * @throws Exception JDA exceptions
      */
     public static void main(String[] args) throws Exception {
-        // Get bot token from config json
-        JSONParser parser = new JSONParser();
-        JSONObject obj = (JSONObject) parser.parse(new FileReader("config.json"));
-        String token = (String) obj.get("token");
+        Dotenv dotenv = Dotenv.load();
+        String token = dotenv.get("TOKEN");
 
         JDABuilder.createDefault(token) // Create bot with bot token
                 .addEventListeners(new ChessBot()) // Add new ChessBot event listener
