@@ -188,7 +188,7 @@ public class ChessBot extends ListenerAdapter {
         try {
             Dotenv dotenv = Dotenv.load();
             token = dotenv.get("TOKEN");
-        } catch (Exception e) {}
+        } catch (Exception ignored) {}
         // If token is null, ask for token in console
         if (token == null) {
             Scanner scanner = new Scanner(System.in);
