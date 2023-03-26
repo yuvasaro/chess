@@ -61,7 +61,8 @@ public class Pawn extends Piece {
         }
 
         // Two squares ahead
-        if (!hasMoved && oneAheadPiece == null && (coords.y == 1 || coords.y == 6)) {
+        if (!hasMoved && oneAheadPiece == null &&
+                (coords.y == 1 && getTeam() == Team.WHITE) || (coords.y == 6 && getTeam() == Team.BLACK)) {
             Point twoSquaresAhead = new Point(coords.x, coords.y + 2 * moveDir);
             if (board.getPiece(twoSquaresAhead) == null) {
                 possibleMoves.add(twoSquaresAhead);
