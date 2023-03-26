@@ -82,6 +82,8 @@ public class ChessAI {
      */
     public boolean move() {
         possibleMoves.clear();
+
+        // Get all possible moves
         for (Piece piece : teamPieces) {
             for (Point move : piece.getMoves()) {
                 possibleMoves.put(move, piece);
@@ -94,12 +96,15 @@ public class ChessAI {
         Point initialCoords = null;
         Piece captured = null;
 
+        // Choose a move to play
         while (!legalMove) {
             int random = (int) (Math.random() * possibleMoves.size());
             move = (Point) possibleMoves.keySet().toArray()[random];
             piece = possibleMoves.get(move);
             initialCoords = piece.getCoords();
             captured = board.getPiece(move);
+
+            // Do the move if legal, otherwise choose a different move
             legalMove = game.legallyMovePiece(board, piece, move);
             if (!legalMove) {
                 possibleMoves.remove(move);
@@ -109,6 +114,7 @@ public class ChessAI {
             }
         }
 
+        // Print out last move, save board, check game end, prompt next move from player
         lastMove = MoveHandler.toMoveNotation(piece, initialCoords,move, captured);
         game.getIO().print("I play " + lastMove);
         game.saveBoardAndMove(lastMove, piece, initialCoords, true);
