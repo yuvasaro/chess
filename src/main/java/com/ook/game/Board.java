@@ -215,7 +215,6 @@ public class Board {
      * Undoes a piece move
      * @param piece the piece to move back
      * @param oldCoords the old position to move the piece to
-     * @param captured the piece that was captured due to the move
      */
     public void undoMovePiece(Piece piece, Point oldCoords) {
         // Move piece back and reset captured piece
