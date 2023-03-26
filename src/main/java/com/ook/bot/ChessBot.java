@@ -1,8 +1,10 @@
 package com.ook.bot;
 
+import com.ook.ai.ChessAI;
 import com.ook.game.Game;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -22,6 +24,7 @@ public class ChessBot extends ListenerAdapter {
     private static final String MOVE_USAGE = "Usage: `!move <move>`";
 
     // Instance variables
+    private String id;
     private ChessBotIO io;
     private Game game;
     private MessageChannel gameChannel;
@@ -29,6 +32,15 @@ public class ChessBot extends ListenerAdapter {
     private String player1ID;
     private Member player2;
     private String player2ID;
+    private ChessAI ai;
+
+    /**
+     * Stores the bot user's ID
+     * @param id the bot user's ID
+     */
+    private void setID(String id) {
+        this.id = id;
+    }
 
     /**
      * Performs actions when messages are sent
@@ -72,11 +84,13 @@ public class ChessBot extends ListenerAdapter {
                 return;
             }
 
-            // Bots can't play
+            // Other bots can't play
             for (User user : mentionedUsers) {
                 if (user.isBot()) {
-                    channel.sendMessage("Bots can't play.").queue();
-                    return;
+                    if (!user.getId().equals(id)) {
+                        channel.sendMessage("I can play you. Other bots can't play.").queue();
+                        return;
+                    }
                 }
             }
 
@@ -95,10 +109,33 @@ public class ChessBot extends ListenerAdapter {
             player2 = mentionedMembers.get(1);
             player2ID = player2.getId();
 
-            // Start game
+            // Check if player is playing bot
+            boolean aiIsPlayingWhite = false;
+            String playerName = null;
+
+            if (player1ID.equals(id)) {
+                ai = new ChessAI("ChessBot");
+                aiIsPlayingWhite = true;
+                playerName = player2.getEffectiveName();
+            } else if (player2ID.equals(id)) {
+                ai = new ChessAI("ChessBot");
+                playerName = player1.getEffectiveName();
+            }
+
+            // Set up IO and game
             io = new ChessBotIO(channel, player1, player2);
-            game = new Game(io, player1.getEffectiveName(), player2.getEffectiveName());
-            game.takeNextMove(null);
+            if (ai != null) {
+                game = new Game(io, playerName, !aiIsPlayingWhite, ai);
+            } else {
+                game = new Game(io, player1.getEffectiveName(), player2.getEffectiveName());
+            }
+
+            // Start game
+            if (ai != null && ai.isPlayingWhite()) {
+                ai.move();
+            } else {
+                game.takeNextMove(null);
+            }
         }
 
         // Move command
@@ -140,6 +177,11 @@ public class ChessBot extends ListenerAdapter {
             // Take the next move in the game
             game.takeNextMove(args[1]);
 
+            // Do AI move if it's AI turn
+            if (ai != null && game.whiteToPlay() == ai.isPlayingWhite()) {
+                ai.move();
+            }
+
             // Send PGN and reset game variables if game has ended
             if (game.ended()) {
                 io.sendPGN();
@@ -152,6 +194,7 @@ public class ChessBot extends ListenerAdapter {
                 player2 = null;
                 player1ID = null;
                 player2ID = null;
+                ai = null;
             }
         }
 
@@ -200,10 +243,14 @@ public class ChessBot extends ListenerAdapter {
             token = scanner.nextLine();
         }
 
-        JDABuilder.createDefault(token) // Create bot with bot token
-                .addEventListeners(new ChessBot()) // Add new ChessBot event listener
+        ChessBot botObject = new ChessBot();
+        JDA discordBot = JDABuilder.createDefault(token) // Create bot with bot token
+                .addEventListeners(botObject) // Add new ChessBot event listener
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT) // Enable message content intent
-                .build() // Connect to discord
-                .getPresence().setActivity(Activity.playing("Chess")); // Set activity to "Playing Chess"
+                .build(); // Connect to discord
+
+        discordBot.getPresence().setActivity(Activity.playing("Chess")); // Set activity to "Playing Chess"
+
+        botObject.setID(discordBot.getSelfUser().getId()); // Store bot ID
     }
 }

@@ -135,10 +135,3 @@ public abstract class Piece {
      */
     public abstract Piece copyInstance(Board otherBoard);
 }
-
-/**
- * Enum for teams white and black
- */
-enum Team {
-    WHITE, BLACK
-}

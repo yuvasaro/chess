@@ -200,4 +200,44 @@ public class MoveHandler {
         // Return string of square (ex. "e4")
         return letter + number;
     }
+
+    /**
+     * Converts a move to move notation
+     * @param piece the moved piece
+     * @param initialCoords the initial coordinates of the piece
+     * @param destination the destination of the piece
+     * @return the move notation for the move (ex. "Bc4")
+     */
+    public static String toMoveNotation(Piece piece, Point initialCoords, Point destination, Piece captured) {
+        String moveNotation = "";
+
+        if (piece instanceof Pawn && captured == null) { // Simple pawn move (ex. "e4")
+            // TODO: promotion
+            return toSquare(destination);
+        }
+
+        // Castle
+        if (piece instanceof King) {
+            if (destination.x == initialCoords.x + 2) { // Short castle
+                return "O-O";
+            } else if (destination.x == initialCoords.x - 2) { // Long castle
+                return "O-O-O";
+            }
+        }
+
+        // Get piece string
+        String pieceString = piece.toString();
+        if (piece instanceof Pawn) { // Get letter of pawn
+            pieceString = toSquare(initialCoords).substring(0, 1);
+        }
+        moveNotation += pieceString;
+
+        // Check capture
+        if (captured != null) {
+            moveNotation += "x";
+        }
+
+        moveNotation += toSquare(destination);
+        return moveNotation;
+    }
 }

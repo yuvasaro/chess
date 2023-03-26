@@ -1,5 +1,6 @@
 package com.ook;
 
+import com.ook.ai.ChessAI;
 import com.ook.bot.ChessBot;
 import com.ook.game.Game;
 import com.ook.io.*;
@@ -34,14 +35,42 @@ public class Main {
                 return;
             }
 
-            // Create console game
-            ConsoleGameIO io = new ConsoleGameIO(args[1], args[2]);
-            Game game = new Game(io, args[1], args[2]);
+            // Check if player is playing AI
+            ChessAI ai = null;
+            boolean aiIsPlayingWhite = false;
+            String playerName = null;
+
+            // Set AI team based on order of arguments
+            if (args[1].equalsIgnoreCase("ai")) {
+                ai = new ChessAI("AI");
+                playerName = args[2];
+                aiIsPlayingWhite = true;
+            } else if (args[2].equalsIgnoreCase("ai")) {
+                ai = new ChessAI("AI");
+                playerName = args[1];
+            }
+
+            // Create Game object based on whether the player is playing the AI
+            ConsoleGameIO io = new ConsoleGameIO(args[1], args[2]);;
+            Game game = null;
+            if (ai != null) {
+                game = new Game(io, playerName, !aiIsPlayingWhite, ai);
+            } else {
+                game = new Game(io, args[1], args[2]);
+            }
 
             // Play until game ends
-            game.takeNextMove(null);
+            if (ai != null && ai.isPlayingWhite()) {
+                ai.move();
+            } else {
+                game.takeNextMove(null);
+            }
             while (!game.ended()) {
-                game.takeNextMove(io.getNextInput());
+                if (ai != null && game.whiteToPlay() == ai.isPlayingWhite()) {
+                    ai.move();
+                } else {
+                    game.takeNextMove(io.getNextInput());
+                }
             }
             io.sendPGN();
             io.cleanup();

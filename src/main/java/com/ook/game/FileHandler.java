@@ -129,8 +129,11 @@ public class FileHandler {
      */
     public static void saveAsImage(Board board, boolean whiteToPlay, 
             Point lastMovedInitialCoords, Piece lastMoved, String whiteName, 
-            String blackName) throws IOException {
-        Piece[][] theBoard = whiteToPlay ? board.getBoard() : board.flipBoard();
+            String blackName, boolean flipBoard) throws IOException {
+        Piece[][] theBoard = board.getBoard();
+        if (flipBoard) { // Flip board according to whose turn it is
+            theBoard = whiteToPlay ? board.getBoard() : board.flipBoard();
+        }
 
         // RGB byte shifts
         int redByteShift = 16;
@@ -163,8 +166,8 @@ public class FileHandler {
                 if (piece == lastMoved) {
                     drawItemOnBoard(
                         boardPixelArray, 
-                        HIGHLIGHT_INITIAL, 
-                        whiteToPlay ? lastMovedInitialCoords : 
+                        HIGHLIGHT_INITIAL,
+                            (whiteToPlay || !flipBoard) ? lastMovedInitialCoords :
                             new Point(
                                 Board.SIZE - 1 - lastMovedInitialCoords.x, 
                                 Board.SIZE - 1 - lastMovedInitialCoords.y), 
