@@ -257,8 +257,28 @@ public class ChessAI {
         // Get all possible moves
         for (Piece piece : theBoard.getTeamPieces(team)) {
             for (Move move : Piece.getMoves(theBoard, piece)) {
+                if (piece.getType() == Piece.PAWN) {
+                    boolean enPassant = game.checkEnPassant(theBoard, move);
+                    Point initialCoords = move.getInitialCoords();
+                    Point destination = move.getDestination();
+                    Piece captured = move.getCaptured();
+                    Point capturedCoords = move.getCapturedCoords();
+
+                    // If not en passant and the destination is on a different column and the
+                    // move is not a capture, it's an illegal move
+                    if (!enPassant) {
+                        if (captured == null && destination.x != initialCoords.x) {
+                            continue;
+                        }
+                        // Or if something is captured but the destination and captured coordinates are different,
+                        // it's illegal
+                        else if (capturedCoords != null && !capturedCoords.equals(destination)) {
+                            continue;
+                        }
+                    }
+                }
                 // Check en passant
-                game.checkEnPassant(theBoard, move);
+                boolean enPassant = game.checkEnPassant(theBoard, move);
 
                 // Add move
                 possibleMoves.add(move);
