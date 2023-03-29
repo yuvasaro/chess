@@ -152,10 +152,12 @@ public class Piece {
             Point rightEP = new Point(x + 1, y);
             Piece rightPiece = board.get(rightEP);
 
-            if (leftPiece != null && leftPiece.getTeam() != team && leftPiece.getType() == PAWN) {
+            if (leftPiece != null && leftPiece.getTeam() != team && leftPiece.getType() == PAWN &&
+                    board.getMoveCounter().get(leftPiece) == 1) {
                 pawnMoves.add(new Move(pawn, initialCoords, leftDiagonal, leftPiece, leftEP));
             }
-            if (rightPiece != null && rightPiece.getTeam() != team && rightPiece.getType() == PAWN) {
+            if (rightPiece != null && rightPiece.getTeam() != team && rightPiece.getType() == PAWN &&
+                    board.getMoveCounter().get(rightPiece) == 1) {
                 pawnMoves.add(new Move(pawn, initialCoords, rightDiagonal, rightPiece, rightEP));
             }
         }

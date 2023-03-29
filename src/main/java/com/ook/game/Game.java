@@ -465,20 +465,26 @@ public class Game {
         Piece pieceToMove = move.getPiece();
         Point initialCoords = move.getInitialCoords();
         Point destination = move.getDestination();
+        Point capturedCoords = move.getCapturedCoords();
 
         if (pieceToMove.getType() == Piece.PAWN) {
             // Check en passant
-            checkEnPassant(theBoard, move);
+            boolean enPassant = checkEnPassant(theBoard, move);
 
-            // Otherwise if the destination is on a different column and the 
+            // If not en passant and the destination is on a different column and the
             // move is not a capture, it's an illegal move
-            if (move.getCaptured() == null && destination.x != initialCoords.x) {
-                return false;
+            if (!enPassant) {
+                if (move.getCaptured() == null && destination.x != initialCoords.x) {
+                    return false;
+                }
+                // Or if something is captured but the destination and captured coordinates are different, it's illegal
+                else if (capturedCoords != null && !capturedCoords.equals(destination)) {
+                    return false;
+                }
             }
         }
 
         // Move the piece and remove any captured pieces
-        Point capturedCoords = move.getCapturedCoords();
         if (capturedCoords != null) {
             theBoard.set(capturedCoords, null);
             capture(move.getCaptured(), opps, false);
@@ -532,13 +538,14 @@ public class Game {
      * Checks whether the move is en passant
      * @param theBoard the board to check
      * @param move the move
-     * @return a point if there is en passant, otherwise null
+     * @return whether the move is en passant
      */
-    public void checkEnPassant(Board theBoard, Move move) {
+    public boolean checkEnPassant(Board theBoard, Move move) {
         Piece pieceToMove = move.getPiece();
         Point pieceCoords = move.getInitialCoords();
         Point destination = move.getDestination();
         Piece captured = move.getCaptured();
+        Point capturedCoords = move.getCapturedCoords();
 
         // EN PASSANT bruh
         Point epCoords = null;
@@ -552,19 +559,26 @@ public class Game {
                 } else if (destination.x == pieceCoords.x - 1) {
                     epCoords = new Point(pieceCoords.x - 1, pieceCoords.y);
                 }
+            } else if (!capturedCoords.equals(destination)) {
+                epCoords = capturedCoords;
+            }
 
-                // If epCoords is set, check if the victim was the last moved piece
-                if (epCoords != null) {
-                    victim = theBoard.get(epCoords.x, epCoords.y);
-                    if (victim.getType() == Piece.PAWN && lastMoved == victim &&
-                            board.getMoveCounter().get(victim).equals(1)) {
-                        // Set en passant captured piece and coordinates
-                        move.setCaptured(victim);
-                        move.setCapturedCoords(epCoords);
-                    }
+            // If epCoords is set, check if the victim was the last moved piece
+            if (epCoords != null) {
+                victim = theBoard.get(epCoords.x, epCoords.y);
+                if (victim.getType() == Piece.PAWN && lastMoved == victim &&
+                        board.getMoveCounter().get(victim).equals(1)) {
+                    // Set en passant captured piece and coordinates
+                    move.setCaptured(victim);
+                    move.setCapturedCoords(epCoords);
+                    return true;
                 }
+            } else {
+                return false;
             }
         }
+
+        return false;
     }
 
     /**
