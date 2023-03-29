@@ -173,8 +173,6 @@ public class ChessAI {
                 String[] result = matcher.group(0).split(" ");
                 move = isPlayingWhite ? result[1] : result[2];
                 bookMovePlayed = game.move(move);
-                if (bookMovePlayed)
-                    System.out.println(matcher.group(0));
             }
         }
 
@@ -237,7 +235,7 @@ public class ChessAI {
 
             // Print out last move and save board
             String lastMove = MoveHandler.toMoveNotation(piece, type, specifier, initialCoords, destination, captured);
-            game.getIO().print("I play " + lastMove + " eval " + evaluation[1]);
+            game.getIO().print(String.format("I play %s.", lastMove));
             game.saveBoardAndMove(lastMove, piece, initialCoords, true);
         }
 
