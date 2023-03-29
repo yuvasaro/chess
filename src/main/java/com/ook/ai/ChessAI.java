@@ -277,8 +277,6 @@ public class ChessAI {
                         }
                     }
                 }
-                // Check en passant
-                boolean enPassant = game.checkEnPassant(theBoard, move);
 
                 // Add move
                 possibleMoves.add(move);
