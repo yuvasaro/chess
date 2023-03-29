@@ -201,7 +201,7 @@ public class ChessAI {
                     for (Move teamPieceMove : Piece.getMoves(board, teamPiece)) {
                         if (teamPieceMove.getDestination().equals(bestMove.getDestination())) {
                             Point teamPieceCoords = teamPiece.getLocation();
-                            if (initialCoords.x == teamPieceCoords.x) {
+                            if (initialCoords.y == teamPieceCoords.y) {
                                 specifier = MoveHandler.toSquare(initialCoords).substring(0, 1);
                             } else {
                                 specifier = MoveHandler.toSquare(initialCoords).substring(1);
