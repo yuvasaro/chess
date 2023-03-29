@@ -25,6 +25,7 @@ public class ChessBot extends ListenerAdapter {
 
     // Instance variables
     private String id;
+    private final String prefix = "!";
     private ChessBotIO io;
     private Game game;
     private MessageChannel gameChannel;
@@ -56,13 +57,13 @@ public class ChessBot extends ListenerAdapter {
         Message message = event.getMessage();
         String content = message.getContentRaw();
 
-        if (content.equals("!ping")) {
+        if (content.equals(prefix + "ping")) {
             channel = event.getChannel();
             channel.sendMessage("Pong!").queue();
         }
 
         // Play game command
-        if (content.startsWith("!play")) {
+        if (content.startsWith(prefix + "play")) {
             String[] args = content.split(" ");
 
             if (args.length != 3) { // Wrong command syntax
@@ -139,7 +140,7 @@ public class ChessBot extends ListenerAdapter {
         }
 
         // Move command
-        if (content.startsWith("!move")) {
+        if (content.startsWith(prefix + "move")) {
             String[] args = content.split(" ");
 
             // Check command syntax
@@ -199,24 +200,24 @@ public class ChessBot extends ListenerAdapter {
         }
 
         // Help command
-        if (content.equals("!help")) {
+        if (content.equals(prefix + "help")) {
             EmbedBuilder embed = new EmbedBuilder();
             embed.setTitle("ChessBot Commands");
             embed.setColor(Color.RED);
 
             // Add commands and descriptions as fields
             embed.addField(new MessageEmbed.Field(
-                    "`!play @player1 @player2`",
+                    String.format("`%splay @player1 @player2`", prefix),
                     "Starts a game with `player1` as White and `player2` as Black.",
                     false
             ));
             embed.addField(new MessageEmbed.Field(
-                    "`!move <move>`",
+                    String.format("`%smove <move>`", prefix),
                     "Plays a move. The move should be in standard chess notation.",
                     false
             ));
             embed.addField(new MessageEmbed.Field(
-                    "`!help`",
+                    String.format("`%shelp`", prefix),
                     "Displays all the commands that ChessBot responds to.",
                     false
             ));
@@ -249,7 +250,8 @@ public class ChessBot extends ListenerAdapter {
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT) // Enable message content intent
                 .build(); // Connect to discord
 
-        discordBot.getPresence().setActivity(Activity.playing("Chess")); // Set activity to "Playing Chess"
+        // Set activity to "Playing Chess"
+        discordBot.getPresence().setActivity(Activity.playing("Chess"));
 
         botObject.setID(discordBot.getSelfUser().getId()); // Store bot ID
     }
