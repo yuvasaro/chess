@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.awt.*;
 import java.io.File;
-import java.time.Instant;
 
 /**
  * Chess bot input/output

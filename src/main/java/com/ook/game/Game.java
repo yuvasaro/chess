@@ -2,9 +2,8 @@ package com.ook.game;
 
 import java.util.ArrayList;
 import java.awt.Point;
-import java.lang.reflect.Constructor;
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.HashMap;
 
 import com.ook.ai.ChessAI;
 import com.ook.io.ChessGameIO;
@@ -15,32 +14,23 @@ import com.ook.io.ChessGameIO;
 public class Game {
     // Instance variables
     private ChessGameIO io;
-    private LocalDate date;
+    private final LocalDate date;
     private boolean whiteToPlay;
-    private Board board;
+    private final Board board;
     private String whiteName;
     private String blackName;
     private ChessAI ai;
-    private boolean validMove;
     private boolean gameEnd;
     private boolean resign;
     private boolean drawOffered;
     private boolean drawAccepted;
-    private String movePrompt = "%s to play. ";
-    private String drawPrompt = "%s, accept draw? (Yes/No) ";
-    private int moveNumber = 0;
-    private Piece lastMoved = null;
+    private final String movePrompt = "%s to play. ";
+    private final String drawPrompt = "%s, accept draw? (Yes/No) ";
+    private int moveNumber = 1;
+    private Piece lastMoved;
     private Point lastMovedInitialCoords = null;
-    private Team winner;
-    private String result;
+    private int winner;
     private String pgn = "";
-    private Map<String, String> letterPieceMapping = Map.of(
-        "N", "Knight",
-        "B", "Bishop",
-        "R", "Rook",
-        "Q", "Queen",
-        "K", "King"
-    );
 
     /**
      * No-arg constructor with instructions common to other constructors
@@ -113,7 +103,7 @@ public class Game {
     public void takeNextMove(String input) {
         String whoPlays = whiteToPlay ? "White" : "Black";
 
-        validMove = false;
+        boolean validMove;
 
         // Start game with null input
         if (input == null) {
@@ -152,7 +142,7 @@ public class Game {
                 if (!validMove) {
                     io.print("Invalid move.");
                 } else {
-                    boolean ioUpdate = (ai == null); // If playing against AI, don't have to flip board
+                    boolean ioUpdate = (ai == null || ai.isPlayingWhite()); // If playing against AI, don't have to flip board
                     saveBoardAndMove(input, lastMoved, lastMovedInitialCoords, ioUpdate);
 
                     // Toggle whiteToPlay to change to next player's turn
@@ -174,7 +164,7 @@ public class Game {
      * @param moveInput the given player move
      * @return whether the move was valid and successfully executed
      */
-    private boolean move(String moveInput) {
+    public boolean move(String moveInput) {
         // Parse move
         String[] moveComponents = MoveHandler.parseMove(moveInput);
 
@@ -209,74 +199,74 @@ public class Game {
      * @return whether the castle was successful
      */
     private boolean castle(String[] moveComponents) {
-        ArrayList<Piece> team = board.getTeamPieces(whiteToPlay);
         String castleString = moveComponents[MoveHandler.CASTLE];
-        King king = null;
-        Rook rook = null;
-        Point kingCoords;
-        Point rookCoords;
-        Point kingDestination;
-        Point rookDestination;
+
+        Piece king = null;
+        Piece rook = null;
+        Point kingCoords = null;
+        Point rookCoords = null;
+        Point kingDestination = null;
+        Point rookDestination = null;
+
         int castleDirection; // 1 for kingside, -1 for queenside
+        int team = whiteToPlay ? Piece.WHITE : Piece.BLACK;
+
+        ArrayList<Piece> teamPieces = board.getTeamPieces(team);
+        HashMap<Piece, Integer> moveCounter = board.getMoveCounter();
 
         if (castleString.equals("O-O")) { // Short castle
             // Get king and h-rook (x=7)
-            for (Piece piece : team) {
-                if (piece instanceof King) {
-                    king = (King) piece;
-                } else if (piece instanceof Rook) {
-                    if (((Rook) piece).getCoords().x == 7) {
-                        rook = (Rook) piece;
+            for (Piece piece : teamPieces) {
+                if (piece.getType() == Piece.KING) {
+                    king = piece;
+                    kingCoords = piece.getLocation();
+                    if ((team == Piece.WHITE && kingCoords.y != 0) || (team == Piece.BLACK && kingCoords.y != 7)) {
+                        return false;
                     }
+                } else if (piece.getType() == Piece.ROOK && piece.getLocation().x == 7) {
+                    rook = piece;
+                    rookCoords = piece.getLocation();
                 }
             }
             castleDirection = 1;
         } else { // Long castle
             // Get king and a-rook (x=0)
-            for (Piece piece : team) {
-                if (piece instanceof King) {
-                    king = (King) piece;
-                } else if (piece instanceof Rook) {
-                    if (((Rook) piece).getCoords().x == 0) {
-                        rook = (Rook) piece;
+            for (Piece piece : teamPieces) {
+                if (piece.getType() == Piece.KING) {
+                    king = piece;
+                    kingCoords = piece.getLocation();
+                    if ((team == Piece.WHITE && kingCoords.y != 0) || (team == Piece.BLACK && kingCoords.y != 7)) {
+                        return false;
                     }
+                } else if (piece.getType() == Piece.ROOK && piece.getLocation().x == 0) {
+                    rook = piece;
+                    rookCoords = piece.getLocation();
                 }
             }
             castleDirection = -1;
         }
-
-        // Calculate destination coords
-        kingCoords = king.getCoords();
-        kingDestination = new Point(
-            kingCoords.x + 2 * castleDirection, kingCoords.y);
-        rookDestination = new Point(
-            kingDestination.x - castleDirection, kingDestination.y);
 
         // If rook doesn't exist, castling is impossible
         if (rook == null) {
             return false;
         }
 
-        // Check that neither piece has already moved
-        if (king.hasMoved() || rook.hasMoved()) {
+        // If king and rook have moved, can't castle
+        if (moveCounter.get(king) > 0 || moveCounter.get(rook) > 0) {
             return false;
         }
 
-        // Check that there are no pieces in between the king and the rook
-        rookCoords = rook.getCoords();
-        Point temp = new Point(
-            kingCoords.x + castleDirection, kingCoords.y);
-        while (!temp.equals(rookCoords)) {
-            if (board.getPiece(temp) != null) {
-                return false;
-            }
-            temp.translate(castleDirection, 0);
-        }
+        // Calculate destination coords
+        kingDestination = new Point(kingCoords.x + 2 * castleDirection, kingCoords.y);
+        rookDestination = new Point(kingDestination.x - castleDirection, kingDestination.y);
 
         // Check if the castle is legal
-        boolean kingLegalMove = legallyMovePiece(board, king, kingDestination);
+        Move kingMove = new Move(king, kingCoords, kingDestination, null, null);
+        Move rookMove = new Move(rook, rookCoords, rookDestination, null, null);
+
+        boolean kingLegalMove = legallyMovePiece(board, kingMove, whiteToPlay);
         if (kingLegalMove) {
-            legallyMovePiece(board, rook, rookDestination);
+            legallyMovePiece(board, rookMove, whiteToPlay);
         }
 
         lastMoved = king;
@@ -292,7 +282,8 @@ public class Game {
      * @return whether the promotion was successful
      */
     private boolean promotion(String[] moveComponents, boolean[] notNull) {
-        ArrayList<Piece> team = board.getTeamPieces(whiteToPlay);
+        int team = whiteToPlay ? Piece.WHITE : Piece.BLACK;
+        ArrayList<Piece> teamPieces = board.getTeamPieces(team);
 
         String square = moveComponents[MoveHandler.SQUARE];
         String promotion = moveComponents[MoveHandler.PROMOTION];
@@ -305,7 +296,6 @@ public class Game {
 
         // Promotion fields
         Point destination = MoveHandler.toCoords(square);
-        Piece promoted = null;
 
         // Determine letter of pawn
         if (notNull[MoveHandler.SPECIFIER]) { // ex. axb8=Q
@@ -315,9 +305,9 @@ public class Game {
         }
 
         // Find pawn
-        for (Piece piece : team) {
-            if (piece instanceof Pawn) {
-                pawnCoords = ((Pawn) piece).getCoords();
+        for (Piece piece : teamPieces) {
+            if (piece.getType() == Piece.PAWN) {
+                pawnCoords = piece.getLocation();
                 pawnSquare = MoveHandler.toSquare(pawnCoords);
 
                 // Check if current pawn square matches pawn letter
@@ -328,45 +318,23 @@ public class Game {
                     } else if (!whiteToPlay && pawnCoords.y != 1) { // 2nd rank
                         return false;
                     }
-                    pawn = (Pawn) piece;
+                    pawn = piece;
                     break;
                 }
             }
         }
 
-        // Get string word of promotion piece class (ex. "Queen")
-        String promotePieceString = letterPieceMapping.get(
-            promotion.substring(1));
-
-        try {
-            // Get promote piece class and constructor
-            Class<?> promotePieceClass = Class.forName(
-                getClass().getPackageName() + "." + promotePieceString);
-            Constructor<?> constructor = promotePieceClass.getConstructor(
-                Board.class, Team.class, int.class, int.class);
-
-            promoted = (Piece) constructor.newInstance(
-                board,
-                (whiteToPlay) ? Team.WHITE : Team.BLACK,
-                destination.x,
-                destination.y
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        // Get promotion piece
+        int promotePieceValue = Piece.letterPieceMapping.get(promotion.substring(1));
 
         // Check if the promotion is legal
-        boolean legalMove = legallyMovePiece(board, pawn, destination);
+        Move promotionMove = new Move(pawn, pawnCoords, destination, board.get(destination), destination);
+        boolean legalMove = legallyMovePiece(board, promotionMove, whiteToPlay);
 
         if (legalMove) {
-            // Remove pawn from team pieces and board
-            team.remove(pawn);
-            board.setPiece(null, destination);
-
-            // Setup promoted piece
-            board.setUpPiece(promoted);
-            lastMoved = promoted;
+            // Turn pawn into promoted piece
+            pawn.setType(promotePieceValue);
+            lastMoved = pawn;
             lastMovedInitialCoords = pawnCoords;
             return true;
         } else {
@@ -380,7 +348,8 @@ public class Game {
      * @return whether the move was successful
      */
     private boolean regularMove(String[] moveComponents) {
-        ArrayList<Piece> team = board.getTeamPieces(whiteToPlay);
+        int team = whiteToPlay ? Piece.WHITE : Piece.BLACK;
+        ArrayList<Piece> teamPieces = board.getTeamPieces(team);
 
         // Get move information
         String square = moveComponents[MoveHandler.SQUARE];
@@ -397,22 +366,22 @@ public class Game {
         }
         Piece pieceToMove = null;
 
-        if (pieceString == "P") {
-            // Pawn at 8th rank as white or 1st rank as black without promotion 
-            // is illegal
-            if ((whiteToPlay && destination.y == 7) || 
-                    (!whiteToPlay && destination.y == 0)) {
+        if (pieceString.equals("P")) {
+            // Pawn at 8th rank as white or 1st rank as black without promotion is illegal
+            if ((whiteToPlay && destination.y == 7) || (!whiteToPlay && destination.y == 0)) {
                 return false;
             }
         }
         
         // Get all pieces that could be the one to move
         ArrayList<Piece> candidates = new ArrayList<>();
-        for (Piece piece : team) {
-            if (piece.toString().equals(pieceString)) {
-                if (piece instanceof Pawn && 
-                        !((Pawn) piece).getPawnSpecifier().equals(pawnString)) {
-                    continue;
+        for (Piece piece : teamPieces) {
+            if (piece.getType() == Piece.letterPieceMapping.get(pieceString)) {
+                if (piece.getType() == Piece.PAWN) { // Check pawn specifier from its location
+                    Point location = piece.getLocation();
+                    if (!MoveHandler.toSquare(location).substring(0, 1).equals(pawnString)) {
+                        continue;
+                    }
                 }
                 candidates.add(piece);
             }
@@ -421,7 +390,14 @@ public class Game {
         // Get only candidates that can move to the destination square
         for (int i = 0; i < candidates.size(); i++) {
             Piece piece = candidates.get(i);
-            if (!piece.getMoves().contains(destination)) {
+            boolean isCandidate = false;
+            for (Move move : Piece.getMoves(board, piece)) {
+                if (move.getDestination().equals(destination)) {
+                    isCandidate = true;
+                    break;
+                }
+            }
+            if (!isCandidate) {
                 candidates.remove(piece);
                 i--;
             }
@@ -441,29 +417,29 @@ public class Game {
                 return false;
             }
 
+            int specifierMatchCount = 0;
             for (Piece piece : candidates) {
-                String currentSquare = MoveHandler.toSquare(
-                    piece.getCoords());
+                String currentSquare = MoveHandler.toSquare(piece.getLocation());
+                specifierMatchCount = 0;
 
-                // If specifier (letter or number) matches piece square, 
-                // select it
-                if (currentSquare.substring(0, 1).equals(specifier) || 
-                        currentSquare.substring(1).equals(specifier)) {
+                // If specifier (letter or number) matches piece square, select it
+                if (currentSquare.substring(0, 1).equals(specifier) || currentSquare.substring(1).equals(specifier)) {
+                    specifierMatchCount++;
                     pieceToMove = piece;
-                    break;
                 }
             }
-
-            // Specifier doesn't match - return false
-            if (pieceToMove == null) {
+            // Specifier doesn't match or has too many matches - return false
+            if (specifierMatchCount != 1) {
                 return false;
             }
         }
 
-        Point pieceCoords = pieceToMove.getCoords();
+        Point pieceCoords = pieceToMove.getLocation();
 
         // Check if the move is legal
-        boolean legalMove = legallyMovePiece(board, pieceToMove, destination);
+        Move move = new Move(pieceToMove, pieceCoords, destination, board.get(destination.x, destination.y),
+                destination);
+        boolean legalMove = legallyMovePiece(board, move, whiteToPlay);
 
         if (legalMove) {
             lastMoved = pieceToMove;
@@ -477,46 +453,41 @@ public class Game {
     /**
      * Moves a given piece if it is a legal move
      * @param theBoard the chessboard
-     * @param pieceToMove the piece to move
-     * @param destination the destination of the piece
+     * @param move the move
+     * @param whiteToPlay whether it is white's turn
      * @return whether the move was legal
      */
-    public boolean legallyMovePiece(Board theBoard, Piece pieceToMove,
-            Point destination) {
-        ArrayList<Piece> opps = theBoard.getTeamPieces(!whiteToPlay);
+    public boolean legallyMovePiece(Board theBoard, Move move, boolean whiteToPlay) {
+        int oppTeam = !whiteToPlay ? Piece.WHITE : Piece.BLACK;
+        ArrayList<Piece> opps = theBoard.getTeamPieces(oppTeam);
 
         // Get piece and coordinates information
-        Point pieceCoords = pieceToMove.getCoords();
-        Piece captured = theBoard.getPiece(destination);
-        Point capturedCoords = destination;
+        Piece pieceToMove = move.getPiece();
+        Point initialCoords = move.getInitialCoords();
+        Point destination = move.getDestination();
 
-        if (pieceToMove instanceof Pawn) {
+        if (pieceToMove.getType() == Piece.PAWN) {
             // Check en passant
-            boolean enPassant = false;
-            Point epCoords = checkEnPassant(theBoard, pieceCoords, captured, 
-                destination);
-            enPassant = (epCoords != null);
+            checkEnPassant(theBoard, move);
 
-            // If en passant, capture en passant victim pawn
-            if (enPassant) {
-                captured = theBoard.getPiece(epCoords);
-                capturedCoords = epCoords;
-            } 
             // Otherwise if the destination is on a different column and the 
             // move is not a capture, it's an illegal move
-            else if (captured == null && destination.x != pieceCoords.x) {
+            if (move.getCaptured() == null && destination.x != initialCoords.x) {
                 return false;
             }
         }
 
         // Move the piece and remove any captured pieces
-        theBoard.movePiece(pieceToMove, destination);
-        capture(captured, opps, false);
+        Point capturedCoords = move.getCapturedCoords();
+        if (capturedCoords != null) {
+            theBoard.set(capturedCoords, null);
+            capture(move.getCaptured(), opps, false);
+        }
+        theBoard.move(pieceToMove, destination);
 
         // Make sure moving the piece doesn't cause the king to be in check
         if (isInCheck(theBoard)) {
-            undoMovePiece(theBoard, pieceToMove, pieceCoords, captured, 
-                capturedCoords, opps);
+            undoMovePiece(theBoard, pieceToMove, initialCoords, move.getCaptured(), move.getCapturedCoords(), opps);
             return false;
         }
 
@@ -532,12 +503,13 @@ public class Game {
      * @param capturedCoords the captured piece's coordinates
      * @param opps the ArrayList of enemy pieces
      */
-    private void undoMovePiece(Board theBoard, Piece pieceToMove, 
-            Point oldCoords, Piece captured, Point capturedCoords, 
+    public void undoMovePiece(Board theBoard, Piece pieceToMove, Point oldCoords, Piece captured, Point capturedCoords,
             ArrayList<Piece> opps) {
-        theBoard.undoMovePiece(pieceToMove, oldCoords);
-        theBoard.setPiece(captured, capturedCoords);
-        capture(captured, opps, true);
+        theBoard.undoMove(pieceToMove, oldCoords);
+        if (capturedCoords != null) {
+            theBoard.set(capturedCoords, captured);
+            capture(captured, opps, true);
+        }
     }
 
     /**
@@ -546,8 +518,7 @@ public class Game {
      * @param pieces the ArrayList of the team's pieces
      * @param undo whether to undo the capture
      */
-    private void capture(Piece piece, ArrayList<Piece> pieces, 
-            boolean undo) {
+    private void capture(Piece piece, ArrayList<Piece> pieces, boolean undo) {
         if (piece != null) {
             if (undo) { // Add piece back
                 pieces.add(piece);
@@ -560,36 +531,40 @@ public class Game {
     /**
      * Checks whether the move is en passant
      * @param theBoard the board to check
-     * @param pieceCoords the initial piece coordinates
-     * @param captured the given captured piece
-     * @param destination the destination square
+     * @param move the move
      * @return a point if there is en passant, otherwise null
      */
-    private Point checkEnPassant(Board theBoard, Point pieceCoords, 
-            Piece captured, Point destination) {
+    public void checkEnPassant(Board theBoard, Move move) {
+        Piece pieceToMove = move.getPiece();
+        Point pieceCoords = move.getInitialCoords();
+        Point destination = move.getDestination();
+        Piece captured = move.getCaptured();
+
         // EN PASSANT bruh
         Point epCoords = null;
-        Pawn victim = null;
+        Piece victim = null;
 
-        if (captured == null) {
-            // Captured pawn coordinates
-            if (destination.x == pieceCoords.x + 1) {
-                epCoords = new Point(pieceCoords.x + 1, pieceCoords.y);
-            } else if (destination.x == pieceCoords.x - 1) {
-                epCoords = new Point(pieceCoords.x - 1, pieceCoords.y);
-            }
+        if (pieceToMove.getType() == Piece.PAWN) {
+            if (captured == null) {
+                // Captured pawn coordinates
+                if (destination.x == pieceCoords.x + 1) {
+                    epCoords = new Point(pieceCoords.x + 1, pieceCoords.y);
+                } else if (destination.x == pieceCoords.x - 1) {
+                    epCoords = new Point(pieceCoords.x - 1, pieceCoords.y);
+                }
 
-            // If epCoords is set, check if the victim was the last moved piece
-            if (epCoords != null) {
-                victim = (Pawn) theBoard.getPiece(epCoords);
-                if (lastMoved != victim) {
-                    return null;
+                // If epCoords is set, check if the victim was the last moved piece
+                if (epCoords != null) {
+                    victim = theBoard.get(epCoords.x, epCoords.y);
+                    if (victim.getType() == Piece.PAWN && lastMoved == victim &&
+                            board.getMoveCounter().get(victim).equals(1)) {
+                        // Set en passant captured piece and coordinates
+                        move.setCaptured(victim);
+                        move.setCapturedCoords(epCoords);
+                    }
                 }
             }
         }
-
-        // Return victim coords
-        return epCoords;
     }
 
     /**
@@ -597,23 +572,27 @@ public class Game {
      * @param theBoard the chessboard
      * @return whether the current player is in check
      */
-    private boolean isInCheck(Board theBoard) {
-        ArrayList<Piece> team = theBoard.getTeamPieces(whiteToPlay);
-        ArrayList<Piece> opps = theBoard.getTeamPieces(!whiteToPlay);
+    public boolean isInCheck(Board theBoard) {
+        int team = whiteToPlay ? Piece.WHITE : Piece.BLACK;
+        int oppTeam = !whiteToPlay ? Piece.WHITE : Piece.BLACK;
+        ArrayList<Piece> teamPieces = theBoard.getTeamPieces(team);
+        ArrayList<Piece> opps = theBoard.getTeamPieces(oppTeam);
         Point kingCoords = null;
 
         // Get team king coords
-        for (Piece piece : team) {
-            if (piece instanceof King) {
-                kingCoords = piece.getCoords();
+        for (Piece piece : teamPieces) {
+            if (piece.getType() == Piece.KING) {
+                kingCoords = piece.getLocation();
                 break;
             }
         }
 
         // Check if opposite team pieces are attacking the king
         for (Piece piece : opps) {
-            if (piece.getMoves().contains(kingCoords)) {
-                return true;
+            for (Move move : Piece.getMoves(board, piece)) {
+                if (move.getDestination().equals(kingCoords)) {
+                    return true;
+                }
             }
         }
 
@@ -621,28 +600,30 @@ public class Game {
     }
 
     /**
-     * Returns whether the game has ended or not
-     * @return whether the game has ended or not
+     * Checks whether the game has ended or not
      */
     public void checkGameEnd() {
         if (!(resign || (drawOffered && drawAccepted))) {
             // Duplicate the board and get its pieces
-            Board duplicateBoard = new Board(board);
-            ArrayList<Piece> team = duplicateBoard.getTeamPieces(whiteToPlay);
+            int team = whiteToPlay ? Piece.WHITE : Piece.BLACK;
+            int oppTeam = !whiteToPlay ? Piece.WHITE : Piece.BLACK;
+            ArrayList<Piece> teamPieces = board.getTeamPieces(team);
+            ArrayList<Piece> opps = board.getTeamPieces(oppTeam);
 
             // Check whether the team is in check and if they have no moves
-            boolean inCheck = isInCheck(duplicateBoard);
+            boolean inCheck = isInCheck(board);
             boolean hasNoMoves = true;
 
             // Check if there is a possible move
-            for (Piece piece : team) {
-                for (Point destination : piece.getMoves()) {
-                    boolean legalMove = legallyMovePiece(duplicateBoard, piece,
-                            destination);
+            for (Piece piece : teamPieces) {
+                Point initialCoords = piece.getLocation();
+                for (Move move : Piece.getMoves(board, piece)) {
+                    boolean legalMove = legallyMovePiece(board, move, whiteToPlay);
 
                     // Undo move after checking
                     if (legalMove) {
                         hasNoMoves = false;
+                        undoMovePiece(board, piece, initialCoords, move.getCaptured(), move.getDestination(), opps);
                         break;
                     }
                 }
@@ -663,7 +644,7 @@ public class Game {
 
             // Checkmate - winner is opposite team
             if (inCheck) {
-                winner = whiteToPlay ? Team.BLACK : Team.WHITE;
+                winner = whiteToPlay ? Piece.BLACK : Piece.WHITE;
             }
             // Otherwise Stalemate - winner stays null
         }
@@ -681,9 +662,9 @@ public class Game {
         // Determine winner if a player resigned
         if (resign) {
             if (whiteToPlay) {
-                winner = Team.BLACK;
+                winner = Piece.BLACK;
             } else {
-                winner = Team.WHITE;
+                winner = Piece.WHITE;
             }
         }
 
@@ -693,10 +674,11 @@ public class Game {
         }
 
         // Print winner
-        if (winner == Team.WHITE) {
+        String result;
+        if (winner == Piece.WHITE) {
             result = "1-0";
             io.print(whiteName + " wins!");
-        } else if (winner == Team.BLACK) {
+        } else if (winner == Piece.BLACK) {
             result = "0-1";
             io.print(blackName + " wins!");
         } else {
@@ -715,7 +697,6 @@ public class Game {
     public void saveBoardAndMove(String input, Piece lastMoved, Point lastMovedInitialCoords, boolean ioUpdate) {
         // Add move to pgn
         if (whiteToPlay) {
-            moveNumber++;
             pgn += String.format("%s. %s ", moveNumber, input);
         } else {
             pgn += String.format("%s ", input);
@@ -730,6 +711,11 @@ public class Game {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        // Increment move number
+        if (!whiteToPlay) {
+            moveNumber++;
         }
     }
 
@@ -782,5 +768,37 @@ public class Game {
      */
     public ChessGameIO getIO() {
         return io;
+    }
+
+    /**
+     * Gets the PGN string of the game
+     * @return the PGN string
+     */
+    public String getPGNString() {
+        return pgn;
+    }
+
+    /**
+     * Gets the move number of the game
+     * @return the move number of the game
+     */
+    public int getMoveNumber() {
+        return moveNumber;
+    }
+
+    /**
+     * Returns the last moved piece
+     * @return the last moved piece
+     */
+    public Piece getLastMoved() {
+        return lastMoved;
+    }
+
+    /**
+     * Returns the initial coordinates of the last moved piece
+     * @return the initial coordinates of the last moved piece
+     */
+    public Point getLastMovedInitialCoords() {
+        return lastMovedInitialCoords;
     }
 }

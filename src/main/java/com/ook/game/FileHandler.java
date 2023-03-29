@@ -11,7 +11,11 @@ import java.awt.Point;
 public class FileHandler {
     // Locations and formats
     private static final String PATH = "/assets/";
-    private static final String IMAGE = PATH + "board.png";
+    private static final String BOARD = PATH + "board.png";
+    private static final String[] whitePieceImages = {"pawn_white.png", "knight_white.png", "bishop_white.png",
+            "rook_white.png", "queen_white.png", "king_white.png"};
+    private static final String[] blackPieceImages = {"pawn_black.png", "knight_black.png", "bishop_black.png",
+            "rook_black.png", "queen_black.png", "king_black.png"};
     private static final String HIGHLIGHT_INITIAL = 
         PATH + "highlight_initial.png";
     private static final String HIGHLIGHT_DESTINATION = 
@@ -57,7 +61,7 @@ public class FileHandler {
 
     /**
      * Opens an image and returns its pixel array
-     * @param imagePath the path to the image
+     * @param bufferedImage a BufferedImage object
      * @return the pixel array
      * @throws IOException if the image file is not found
      */
@@ -128,26 +132,20 @@ public class FileHandler {
      * @throws IOException if an image file is not found
      */
     public static void saveAsImage(Board board, boolean whiteToPlay, 
-            Point lastMovedInitialCoords, Piece lastMoved, String whiteName, 
+            Point lastMovedInitialCoords, Piece lastMoved, String whiteName,
             String blackName, boolean flipBoard) throws IOException {
         Piece[][] theBoard = board.getBoard();
         if (flipBoard) { // Flip board according to whose turn it is
             theBoard = whiteToPlay ? board.getBoard() : board.flipBoard();
         }
 
-        // RGB byte shifts
-        int redByteShift = 16;
-        int greenByteShift = 8;
-        int blueByteShift = 0;
-
         // Open board image and get pixel array
         BufferedImage boardImage = ImageIO.read(
-            FileHandler.class.getResource(IMAGE));
+            FileHandler.class.getResource(BOARD));
         int[][] boardPixelArray = open(boardImage);
 
         // Transparent RGB color as pixel int
-        int transparentRGB = (0 << redByteShift) + (0 << greenByteShift) + 
-            (0 << blueByteShift);
+        int transparentRGB = 0;
 
         // Loop through all pieces on the board and add draw them
         for (int i = 0; i < Board.SIZE; i++) {
@@ -159,7 +157,13 @@ public class FileHandler {
                 }
 
                 // Open piece image
-                String imagePath = piece.getImagePath();
+                int team = piece.getTeam();
+                String imagePath;
+                if (team == Piece.WHITE) {
+                    imagePath = whitePieceImages[piece.getType() - 1];
+                } else {
+                    imagePath = blackPieceImages[piece.getType() - 1];
+                }
 
                 // Draw highlights on initial coords and destination of last 
                 // moved piece

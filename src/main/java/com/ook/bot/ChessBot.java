@@ -178,7 +178,7 @@ public class ChessBot extends ListenerAdapter {
             game.takeNextMove(args[1]);
 
             // Do AI move if it's AI turn
-            if (ai != null && game.whiteToPlay() == ai.isPlayingWhite()) {
+            if (ai != null && !game.ended() && game.whiteToPlay() == ai.isPlayingWhite()) {
                 ai.move();
             }
 
