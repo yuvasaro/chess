@@ -199,6 +199,10 @@ public class Game {
      * @return whether the castle was successful
      */
     private boolean castle(String[] moveComponents) {
+        if (isInCheck(board)) {
+            return false;
+        }
+
         String castleString = moveComponents[MoveHandler.CASTLE];
 
         Piece king = null;

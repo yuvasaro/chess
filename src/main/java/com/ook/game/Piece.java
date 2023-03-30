@@ -359,20 +359,7 @@ public class Piece {
 
         // Castle
         if (x == kingStartX && board.getMoveCounter().get(king) == 0) {
-            // Check if king is in check
-            boolean inCheck = false;
-            for (Piece opp : board.getTeamPieces(oppTeam)) {
-                if (opp.getType() != Piece.KING) {
-                    for (Move move : Piece.getMoves(board, opp)) {
-                        if (move.getDestination().equals(king.getLocation())) {
-                            inCheck = true;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (!inCheck && ((team == WHITE && y == whiteKingStartY) || (team == BLACK && y == blackKingStartY))) {
+            if ((team == WHITE && y == whiteKingStartY) || (team == BLACK && y == blackKingStartY)) {
                 // Short castle
                 int checkX = x + 1;
                 while (checkX < 7) {
