@@ -99,7 +99,7 @@ public class ChessAI {
     private Board board;
     private boolean isPlayingWhite;
     private final int searchDepth = 5;
-    private ArrayList<String> openings;
+    private final ArrayList<String> openings;
     private final String moveRegex = "(%1$d\\.) %2$s %2$s";
 
     /**
@@ -257,12 +257,13 @@ public class ChessAI {
         // Get all possible moves
         for (Piece piece : theBoard.getTeamPieces(team)) {
             for (Move move : Piece.getMoves(theBoard, piece)) {
-                if (piece.getType() == Piece.PAWN) {
+                Point initialCoords = move.getInitialCoords();
+                Point destination = move.getDestination();
+                Piece captured = move.getCaptured();
+                Point capturedCoords = move.getCapturedCoords();
+
+                if (piece.getType() == Piece.PAWN) { // Check en passant
                     boolean enPassant = game.checkEnPassant(theBoard, move);
-                    Point initialCoords = move.getInitialCoords();
-                    Point destination = move.getDestination();
-                    Piece captured = move.getCaptured();
-                    Point capturedCoords = move.getCapturedCoords();
 
                     // If not en passant and the destination is on a different column and the
                     // move is not a capture, it's an illegal move
@@ -273,6 +274,12 @@ public class ChessAI {
                         // Or if something is captured but the destination and captured coordinates are different,
                         // it's illegal
                         else if (capturedCoords != null && !capturedCoords.equals(destination)) {
+                            continue;
+                        }
+                    }
+                } else if (piece.getType() == Piece.KING) { // Can't castle when in check
+                    if (Math.abs(destination.x - initialCoords.x) == 2) {
+                        if (game.isInCheck(theBoard)) {
                             continue;
                         }
                     }
