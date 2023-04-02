@@ -424,7 +424,6 @@ public class Game {
             int specifierMatchCount = 0;
             for (Piece piece : candidates) {
                 String currentSquare = MoveHandler.toSquare(piece.getLocation());
-                specifierMatchCount = 0;
 
                 // If specifier (letter or number) matches piece square, select it
                 if (currentSquare.substring(0, 1).equals(specifier) || currentSquare.substring(1).equals(specifier)) {
