@@ -530,39 +530,4 @@ public class ChessAI {
 
         return movesOrdered;
     }
-
-    /**
-     * Uses an iterative deepening approach to find the best move in a reasonable amount of time
-     * @param theBoard the chessboard
-     * @param depth the maximum depth to search
-     * @param alpha the best evaluation the maximizer can achieve for the current position
-     * @param beta the best evaluation the minimizer can achieve for the current position
-     * @param maximizer whether the current search is for the maximizer
-     * @param isMaximizerWhite whether white is trying to maximize the evaluation
-     * @return the best move based on how many searches were possible
-     */
-    public Object[] iterativeDeepening(Board theBoard, int depth, int alpha, int beta, boolean maximizer,
-                                   boolean isMaximizerWhite) {
-        // Set time limit for running minimax
-        long timeLimitSeconds = 2;
-        long start = System.currentTimeMillis();
-        long end = start + timeLimitSeconds * 1000;
-
-        Object[] bestEvaluation = null;
-        ArrayDeque<Object[]> bestMoveEvaluations = new ArrayDeque<>();
-
-        // Run until time limit is up
-        int i = 1;
-        while (System.currentTimeMillis() < end && i < depth) {
-            // Start with search depth of 1, then deepen iteratively
-            Object[] evaluation = minimax(theBoard, depth, alpha, beta, maximizer, isMaximizerWhite,
-                    bestMoveEvaluations);
-            bestEvaluation = evaluation;
-            bestMoveEvaluations.add(evaluation);
-            i++;
-        }
-
-        return bestEvaluation;
-    }
-
 }
