@@ -1,18 +1,18 @@
 package com.ook.game;
 
-import java.awt.Point;
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Board class
  */
 public class Board {
     public static final int SIZE = 8;
-    
-    // Board and pieces
-    private Piece[][] board;
-    private ArrayList<Piece> whitePieces;
-    private ArrayList<Piece> blackPieces;
+    private final Piece[][] board;
+    private final ArrayList<Piece> whitePieces;
+    private final ArrayList<Piece> blackPieces;
+    private final HashMap<Piece, Integer> moveCounter;
 
     /**
      * Board constructor
@@ -21,98 +21,75 @@ public class Board {
         board = new Piece[SIZE][SIZE];
         whitePieces = new ArrayList<>();
         blackPieces = new ArrayList<>();
+        moveCounter = new HashMap<>();
 
         // Piece order: Rook Knight Bishop Queen King Bishop Knight Rook
 
         // Set up White pieces
-        setUpPiece(new Rook(this, Team.WHITE, 0, 0));
-        setUpPiece(new Knight(this, Team.WHITE, 1, 0));
-        setUpPiece(new Bishop(this, Team.WHITE, 2, 0));
-        setUpPiece(new Queen(this, Team.WHITE, 3, 0));
-        setUpPiece(new King(this, Team.WHITE, 4, 0));
-        setUpPiece(new Bishop(this, Team.WHITE, 5, 0));
-        setUpPiece(new Knight(this, Team.WHITE, 6, 0));
-        setUpPiece(new Rook(this, Team.WHITE, 7, 0));
+        setUpPiece(Piece.WHITE, Piece.ROOK, new Point(0, 0));
+        setUpPiece(Piece.WHITE, Piece.KNIGHT, new Point(1, 0));
+        setUpPiece(Piece.WHITE, Piece.BISHOP, new Point(2, 0));
+        setUpPiece(Piece.WHITE, Piece.QUEEN, new Point(3, 0));
+        setUpPiece(Piece.WHITE, Piece.KING, new Point(4, 0));
+        setUpPiece(Piece.WHITE, Piece.BISHOP, new Point(5, 0));
+        setUpPiece(Piece.WHITE, Piece.KNIGHT, new Point(6, 0));
+        setUpPiece(Piece.WHITE, Piece.ROOK, new Point(7, 0));
 
         for (int i = 0; i < SIZE; i++) {
-            setUpPiece(new Pawn(this, Team.WHITE, i, 1));
+            setUpPiece(Piece.WHITE, Piece.PAWN, new Point(i, 1));
         }
 
         // Set up Black pieces
-        setUpPiece(new Rook(this, Team.BLACK, 0, 7));
-        setUpPiece(new Knight(this, Team.BLACK, 1, 7));
-        setUpPiece(new Bishop(this, Team.BLACK, 2, 7));
-        setUpPiece(new Queen(this, Team.BLACK, 3, 7));
-        setUpPiece(new King(this, Team.BLACK, 4, 7));
-        setUpPiece(new Bishop(this, Team.BLACK, 5, 7));
-        setUpPiece(new Knight(this, Team.BLACK, 6, 7));
-        setUpPiece(new Rook(this, Team.BLACK, 7, 7));
+        setUpPiece(Piece.BLACK, Piece.ROOK, new Point(0, 7));
+        setUpPiece(Piece.BLACK, Piece.KNIGHT, new Point(1, 7));
+        setUpPiece(Piece.BLACK, Piece.BISHOP, new Point(2, 7));
+        setUpPiece(Piece.BLACK, Piece.QUEEN, new Point(3, 7));
+        setUpPiece(Piece.BLACK, Piece.KING, new Point(4, 7));
+        setUpPiece(Piece.BLACK, Piece.BISHOP, new Point(5, 7));
+        setUpPiece(Piece.BLACK, Piece.KNIGHT, new Point(6, 7));
+        setUpPiece(Piece.BLACK, Piece.ROOK, new Point(7, 7));
 
         for (int i = 0; i < SIZE; i++) {
-            setUpPiece(new Pawn(this, Team.BLACK, i, 6));
+            setUpPiece(Piece.BLACK, Piece.PAWN, new Point(i, 6));
         }
     }
 
     /**
-     * Board constructor that duplicates another board
-     * @param otherBoard the other board to copy
+     * Board constructor that copies another board
+     * @param otherBoard the other chessboard
      */
     public Board(Board otherBoard) {
         board = new Piece[SIZE][SIZE];
         whitePieces = new ArrayList<>();
         blackPieces = new ArrayList<>();
+        moveCounter = new HashMap<>();
 
-        // Duplicate each piece on the other board
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                Piece otherPiece = otherBoard.getPiece(new Point(i, j));
+                Piece otherPiece = otherBoard.get(i, j);
                 if (otherPiece == null) {
                     continue;
                 }
-
-                // Create a copy of the other piece
-                Piece duplicatePiece = otherPiece.copyInstance(this);
-                setUpPiece(duplicatePiece);
+                setUpPiece(otherPiece.getTeam(), otherPiece.getType(), new Point(i, j));
             }
         }
     }
 
     /**
-     * Adds a piece to the board and the piece array for its team
-     * @param piece the piece to add
+     * Sets up a piece on the board
+     * @param team the piece's team
+     * @param type the piece's integer value
+     * @param location the location on the board
      */
-    public void setUpPiece(Piece piece) {
-        Point coords = piece.getCoords();
-        Team team = piece.getTeam();
-
-        setPiece(piece, coords);
-        if (team == Team.WHITE) {
+    public void setUpPiece(int team, int type, Point location) {
+        Piece piece = new Piece(team, type, location);
+        board[location.x][location.y] = piece;
+        if (team == Piece.WHITE) {
             whitePieces.add(piece);
         } else {
             blackPieces.add(piece);
         }
-    }
-
-    /**
-     * toString() for the board
-     * @return a string displaying the chessboard
-     */
-    public String toString() {
-        String display = "";
-
-        for (int j = SIZE - 1; j >= 0; j--) {
-            for (int i = 0; i < SIZE; i++) {
-                Piece piece = board[i][j];
-                if (piece == null) {
-                    display += ". ";
-                } else {
-                    display += board[i][j] + " ";
-                }
-            }
-            display += "\n";
-        }
-
-        return display;
+        moveCounter.put(piece, 0);
     }
 
     /**
@@ -138,87 +115,97 @@ public class Board {
     }
 
     /**
-     * Getter for whitePieces
-     * @return ArrayList of white pieces
-     */
-    public ArrayList<Piece> getWhitePieces() {
-        return whitePieces;
-    }
-
-    /**
-     * Getter for blackPieces
-     * @return ArrayList of black pieces
-     */
-    public ArrayList<Piece> getBlackPieces() {
-        return blackPieces;
-    }
-
-    /**
-     * Gets the pieces ArrayList for the current team
-     * @param whiteToPlay whether it is white's turn
-     * @return the ArrayList of pieces for the current team
-     */
-    public ArrayList<Piece> getTeamPieces(boolean whiteToPlay) {
-        return whiteToPlay ? whitePieces : blackPieces;
-    }
-
-    /**
      * Returns whether the given coordinates are in bounds
-     * @param coords the coordinates to check
+     * @param x the x coordinate
+     * @param y the y coordinate
      * @return whether the coordinates are in bounds
      */
-    public boolean isInBounds(Point coords) {
-        return coords.x >= 0 && coords.x < SIZE && 
-            coords.y >= 0 && coords.y < SIZE;
+    public boolean isInBounds(int x, int y) {
+        return x >= 0 && x < SIZE &&
+            y >= 0 && y < SIZE;
     }
 
     /**
      * Gets the piece on a given square's coordinates
-     * @param coords the coordinates of the square
-     * @return the piece on the square (null if no piece)
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @return the piece on the square (0 if no piece)
      */
-    public Piece getPiece(Point coords) {
-        if (!isInBounds(coords)) {
+    public Piece get(int x, int y) {
+        if (!isInBounds(x, y)) {
+            return null;
+        }
+        return board[x][y];
+    }
+
+    /**
+     * Gets the piece on a given square's coordinates
+     * @param coords the coordinates
+     * @return the piece on the square (0 if no piece)
+     */
+    public Piece get(Point coords) {
+        if (coords == null) {
+            return null;
+        }
+        if (!isInBounds(coords.x, coords.y)) {
             return null;
         }
         return board[coords.x][coords.y];
     }
 
     /**
-     * Sets the piece on a given square
+     * Sets the piece at a given square on the board
+     * @param coords the coordinates
      * @param piece the piece to set
-     * @param coords the coordinates to put the piece on
      */
-    public void setPiece(Piece piece, Point coords) {
-        if (!isInBounds(coords)) {
+    public void set(Point coords, Piece piece) {
+        if (!isInBounds(coords.x, coords.y)) {
             return;
         }
         board[coords.x][coords.y] = piece;
+        if (piece != null) {
+            piece.setLocation(coords);
+        }
     }
 
     /**
-     * Moves a piece by changing the piece's location on the board
+     * Moves a piece to new location
      * @param piece the piece to move
-     * @param newCoords the new position to move the piece to
-     * @return the piece that was captured during the move
+     * @param coords the coordinates to move the piece to
      */
-    public void movePiece(Piece piece, Point newCoords) {
-        Point currentCoords = piece.getCoords();
-
-        // Move given piece and return the original piece on that square
-        setPiece(piece, newCoords);
-        setPiece(null, currentCoords);
-        piece.move(newCoords); // Changes coords of Piece object
+    public void move(Piece piece, Point coords) {
+        Point current = piece.getLocation();
+        set(coords, piece);
+        set(current, null);
+        moveCounter.put(piece, moveCounter.get(piece) + 1);
     }
 
     /**
-     * Undoes a piece move
-     * @param piece the piece to move back
-     * @param oldCoords the old position to move the piece to
+     * Undo move a piece to its old location
+     * @param piece the piece to move
+     * @param coords the coordinates to move the piece back to
      */
-    public void undoMovePiece(Piece piece, Point oldCoords) {
-        // Move piece back and reset captured piece
-        setPiece(piece, oldCoords);
-        piece.undoMove(oldCoords); // Changes coords of Piece object
+    public void undoMove(Piece piece, Point coords) {
+        Point current = piece.getLocation();
+        set(coords, piece);
+        set(current, null);
+        moveCounter.put(piece, moveCounter.get(piece) - 1);
+    }
+
+    /**
+     * Returns the HashMap of pieces for the given team
+     * @param team the team to get the pieces for
+     * @return the locations and pieces for the given team
+     */
+    public ArrayList<Piece> getTeamPieces(int team) {
+        return (team == Piece.WHITE) ? whitePieces : blackPieces;
+    }
+
+    /**
+     * Gets the move counter HashMap
+     * @return a HashMap of pieces and their move counts
+     */
+    public HashMap<Piece, Integer> getMoveCounter() {
+        return moveCounter;
     }
 }

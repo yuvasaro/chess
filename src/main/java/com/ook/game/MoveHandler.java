@@ -43,8 +43,8 @@ public class MoveHandler {
     public static final int CHECK_MATE = 6;
 
     // Regex pattern
-    private static final String PATTERN = 
-        "([NBRQK])?([a-h])?(x)?([a-h][1-8])(?:([=][NBQR]))?([+#])?";
+    public static final String PATTERN =
+        "([NBRQK])?([a-h]|[1-8])?(x)?([a-h][1-8])(?:(=[NBQR]))?([+#])?";
 
     // Castle regex pattern
     private static final String CASTLE_PATTERN = "(O-O)(-O)?([+#])?";
@@ -204,20 +204,42 @@ public class MoveHandler {
     /**
      * Converts a move to move notation
      * @param piece the moved piece
+     * @param type the type of the piece
+     * @param specifier the specifier of the piece
      * @param initialCoords the initial coordinates of the piece
      * @param destination the destination of the piece
+     * @param captured the piece that was captured during the move
      * @return the move notation for the move (ex. "Bc4")
      */
-    public static String toMoveNotation(Piece piece, Point initialCoords, Point destination, Piece captured) {
+    public static String toMoveNotation(Piece piece, int type, String specifier, Point initialCoords,
+                                        Point destination, Piece captured) {
         String moveNotation = "";
 
-        if (piece instanceof Pawn && captured == null) { // Simple pawn move (ex. "e4")
-            // TODO: promotion
-            return toSquare(destination);
+        if (type == Piece.PAWN) {
+            if (captured == null) { // Simple pawn move (ex. "e4")
+                moveNotation += toSquare(destination);
+            } else { // Pawn capture (ex. "dxc3")
+                moveNotation += toSquare(initialCoords).substring(0, 1) + "x" + toSquare(destination);
+            }
+
+            // Promotion
+            String promotedTypeLetter = null;
+            if (piece.getType() != Piece.PAWN) {
+                for (String letter : Piece.letterPieceMapping.keySet()) {
+                    int newType = Piece.letterPieceMapping.get(letter);
+                    if (newType == piece.getType()) {
+                        promotedTypeLetter = letter;
+                        break;
+                    }
+                }
+                moveNotation += "=" + promotedTypeLetter;
+            }
+
+            return moveNotation;
         }
 
         // Castle
-        if (piece instanceof King) {
+        if (type == Piece.KING) {
             if (destination.x == initialCoords.x + 2) { // Short castle
                 return "O-O";
             } else if (destination.x == initialCoords.x - 2) { // Long castle
@@ -226,11 +248,14 @@ public class MoveHandler {
         }
 
         // Get piece string
-        String pieceString = piece.toString();
-        if (piece instanceof Pawn) { // Get letter of pawn
-            pieceString = toSquare(initialCoords).substring(0, 1);
+        String pieceString = null;
+        for (String letter : Piece.letterPieceMapping.keySet()) {
+            if (Piece.letterPieceMapping.get(letter) == piece.getType()) {
+                pieceString = letter;
+                break;
+            }
         }
-        moveNotation += pieceString;
+        moveNotation += pieceString + specifier;
 
         // Check capture
         if (captured != null) {
