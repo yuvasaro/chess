@@ -278,9 +278,27 @@ public class ChessAI {
                         }
                     }
                 } else if (piece.getType() == Piece.KING) { // Can't castle when in check
-                    if (Math.abs(destination.x - initialCoords.x) == 2) {
-                        if (game.isInCheck(theBoard)) {
-                            continue;
+                    int distance = destination.x - initialCoords.x;
+                    if (Math.abs(distance) == 2) {
+                        int direction = distance / Math.abs(distance);
+                        if (Math.abs(destination.x - initialCoords.x) == 2) {
+                            if (game.isInCheck(theBoard)) {
+                                continue;
+                            }
+
+                            // Check if any of the squares in the castling path are being attacked
+                            Point checkSquare = new Point(piece.getLocation());
+                            boolean squareAttacked = false;
+                            while (checkSquare.x != destination.x) {
+                                if (game.isBeingAttacked(theBoard, checkSquare)) {
+                                    squareAttacked = true;
+                                    break;
+                                }
+                                checkSquare.translate(direction, 0);
+                            }
+                            if (squareAttacked) {
+                                continue;
+                            }
                         }
                     }
                 }

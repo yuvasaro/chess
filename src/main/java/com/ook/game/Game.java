@@ -264,6 +264,15 @@ public class Game {
         kingDestination = new Point(kingCoords.x + 2 * castleDirection, kingCoords.y);
         rookDestination = new Point(kingDestination.x - castleDirection, kingDestination.y);
 
+        // Check if any of the squares in the castling path are being attacked
+        Point checkSquare = new Point(kingCoords);
+        while (checkSquare.x != kingDestination.x) {
+            if (isBeingAttacked(board, checkSquare)) {
+                return false;
+            }
+            checkSquare.translate(castleDirection, 0);
+        }
+
         // Check if the castle is legal
         Move kingMove = new Move(king, kingCoords, kingDestination, null, null);
         Move rookMove = new Move(rook, rookCoords, rookDestination, null, null);
@@ -591,9 +600,7 @@ public class Game {
      */
     public boolean isInCheck(Board theBoard) {
         int team = whiteToPlay ? Piece.WHITE : Piece.BLACK;
-        int oppTeam = !whiteToPlay ? Piece.WHITE : Piece.BLACK;
         ArrayList<Piece> teamPieces = theBoard.getTeamPieces(team);
-        ArrayList<Piece> opps = theBoard.getTeamPieces(oppTeam);
         Point kingCoords = null;
 
         // Get team king coords
@@ -604,10 +611,23 @@ public class Game {
             }
         }
 
+        return isBeingAttacked(theBoard, kingCoords);
+    }
+
+    /**
+     * Returns whether a square is being attacked by the enemy team
+     * @param theBoard the chessboard
+     * @param square the square in question
+     * @return whether an enemy piece sees the square
+     */
+    public boolean isBeingAttacked(Board theBoard, Point square) {
+        int oppTeam = whiteToPlay ? Piece.BLACK : Piece.WHITE;
+        ArrayList<Piece> opps = theBoard.getTeamPieces(oppTeam);
+
         // Check if opposite team pieces are attacking the king
         for (Piece piece : opps) {
             for (Move move : Piece.getMoves(board, piece)) {
-                if (move.getDestination().equals(kingCoords)) {
+                if (move.getDestination().equals(square)) {
                     return true;
                 }
             }

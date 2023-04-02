@@ -310,7 +310,6 @@ public class Piece {
     public static ArrayList<Move> getKingMoves(Board board, Piece king, int x, int y) {
         ArrayList<Move> possibleMoves = new ArrayList<>();
         int team = king.getTeam();
-        int oppTeam = (team == Piece.WHITE) ? Piece.BLACK : Piece.WHITE;
         Point initialCoords = king.getLocation();
         int kingStartX = 4;
         int whiteKingStartY = 0;
