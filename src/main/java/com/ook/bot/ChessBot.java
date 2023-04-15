@@ -25,6 +25,7 @@ public class ChessBot extends ListenerAdapter {
 
     // Instance variables
     private String id;
+    private JDA jda;
     private final String prefix = "!";
     private ChessBotIO io;
     private Game game;
@@ -117,18 +118,19 @@ public class ChessBot extends ListenerAdapter {
             if (player1ID.equals(id)) {
                 ai = new ChessAI("ChessBot");
                 aiIsPlayingWhite = true;
-                playerName = player2.getEffectiveName();
+                playerName = jda.retrieveUserById(player2ID).complete().getName();
             } else if (player2ID.equals(id)) {
                 ai = new ChessAI("ChessBot");
-                playerName = player1.getEffectiveName();
+                playerName = jda.retrieveUserById(player1ID).complete().getName();
             }
 
             // Set up IO and game
-            io = new ChessBotIO(channel, player1, player2);
+            io = new ChessBotIO(jda, channel, player1, player2);
             if (ai != null) {
                 game = new Game(io, playerName, !aiIsPlayingWhite, ai);
             } else {
-                game = new Game(io, player1.getEffectiveName(), player2.getEffectiveName());
+                game = new Game(io, jda.retrieveUserById(player1ID).complete().getName(),
+                        jda.retrieveUserById(player2ID).complete().getName());
             }
 
             // Start game
@@ -224,6 +226,19 @@ public class ChessBot extends ListenerAdapter {
 
             channel.sendMessageEmbeds(embed.build()).queue();
         }
+
+        // Author: Lodesword
+        if (content.equals(prefix + "creator")) {
+            channel.sendMessage("Lodesword is my creator.").queue();
+        }
+    }
+
+    /**
+     * Setter for JDA
+     * @param jda the JDA object
+     */
+    public void setJDA(JDA jda) {
+        this.jda = jda;
     }
 
     /**
@@ -249,6 +264,7 @@ public class ChessBot extends ListenerAdapter {
                 .addEventListeners(botObject) // Add new ChessBot event listener
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT) // Enable message content intent
                 .build(); // Connect to discord
+        botObject.setJDA(discordBot);
 
         // Set activity to "Playing Chess"
         discordBot.getPresence().setActivity(Activity.playing("Chess"));

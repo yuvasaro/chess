@@ -2,6 +2,7 @@ package com.ook.bot;
 
 import com.ook.game.FileHandler;
 import com.ook.io.ChessGameIO;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -21,6 +22,7 @@ public class ChessBotIO implements ChessGameIO {
     private String whiteName;
     private Member black;
     private String blackName;
+    private JDA jda;
 
     /**
      * ChessBotIO constructor
@@ -28,12 +30,12 @@ public class ChessBotIO implements ChessGameIO {
      * @param player1 the user playing white
      * @param player2 the user playing black
      */
-    public ChessBotIO(MessageChannel channel, Member player1, Member player2) {
+    public ChessBotIO(JDA jda, MessageChannel channel, Member player1, Member player2) {
         this.channel = channel;
         white = player1;
-        whiteName = player1.getEffectiveName();
+        whiteName = jda.retrieveUserById(player1.getId()).complete().getName();
         black = player2;
-        blackName = player2.getEffectiveName();
+        blackName = jda.retrieveUserById(player2.getId()).complete().getName();
     }
 
     /**
