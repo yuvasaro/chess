@@ -182,7 +182,7 @@ public class ChessAI {
             game.saveBoardAndMove(move, game.getLastMoved(), game.getLastMovedInitialCoords(), true);
         } else { // If there are no more book moves, play based on minimax search
             Object[] evaluation = minimax(board, searchDepth, Integer.MIN_VALUE, Integer.MAX_VALUE, true,
-                    isPlayingWhite, null);
+                    isPlayingWhite);
             Move bestMove = (Move) evaluation[0];
 
             // Get parameters for game move piece method
@@ -367,15 +367,9 @@ public class ChessAI {
      * @return the best move and its evaluation
      */
     public Object[] minimax(Board theBoard, int depth, int alpha, int beta, boolean maximizer,
-                            boolean isMaximizerWhite, ArrayDeque<Object[]> bestMoveEvaluations) {
+                            boolean isMaximizerWhite) {
         if (depth <= 0) { // Return just the evaluation of the current position
             return new Object[] {null, evaluatePosition(theBoard, isMaximizerWhite)};
-        }
-
-        // If best move has already been calculated, return it
-        if (bestMoveEvaluations != null && !bestMoveEvaluations.isEmpty()) {
-            Deque<Object[]> bestMoveEvalsCopy = new ArrayDeque<>(bestMoveEvaluations);
-            return bestMoveEvalsCopy.removeFirst();
         }
 
         Move bestMove;
@@ -409,8 +403,7 @@ public class ChessAI {
                 }
 
                 // Get the evaluation by recursively calling minimax at depth - 1
-                Object[] evaluation = minimax(theBoard, depth - 1, alpha, beta, false, isMaximizerWhite,
-                        bestMoveEvaluations);
+                Object[] evaluation = minimax(theBoard, depth - 1, alpha, beta, false, isMaximizerWhite);
 
                 // Undo the move
                 game.undoMovePiece(theBoard, piece, initialCoords, captured, capturedCoords,
@@ -459,8 +452,7 @@ public class ChessAI {
                 }
 
                 // Get the evaluation by recursively calling minimax at depth - 1
-                Object[] evaluation = minimax(theBoard, depth - 1, alpha, beta, true, isMaximizerWhite,
-                        bestMoveEvaluations);
+                Object[] evaluation = minimax(theBoard, depth - 1, alpha, beta, true, isMaximizerWhite);
 
                 // Undo the move
                 game.undoMovePiece(theBoard, piece, initialCoords, captured, capturedCoords,

@@ -119,7 +119,6 @@ public class MoveHandler {
         String square = moveComponents[SQUARE];
         String promotion = moveComponents[PROMOTION];
         String castle = moveComponents[CASTLE];
-        // String checkMate = move[CHECK_MATE];
 
         // Move must either have a square or be a castle
         if (square == null && castle == null) {
